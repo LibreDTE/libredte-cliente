@@ -30,6 +30,7 @@ from base64 import b64encode, b64decode
 import os
 from json import dumps as json_encode
 from json import loads as json_decode
+import codecs
 
 # opciones en formato corto
 options = ''
@@ -73,8 +74,8 @@ def main(Cliente, args) :
     dte_emitido['xml'] = None
     with open(dir+'/emitido.json', 'w') as f:
         f.write(json_encode(dte_emitido))
-    with open(dir+'/emitido.xml', 'w') as f:
-        f.write(b64decode(xml_emitido).decode('ISO8859'))
+    with codecs.open(dir+'/emitido.xml', 'w', 'iso-8859-1') as f:
+        f.write(b64decode(xml_emitido).decode('iso-8859-1'))
     columnas = ['emisor', 'dte', 'folio', 'certificacion', 'tasa', 'fecha', 'sucursal_sii', 'receptor', 'exento', 'neto', 'iva', 'total', 'usuario', 'track_id']
     valores = []
     for col in columnas :
