@@ -36,11 +36,11 @@ import codecs
 options = ''
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=']
+long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=']
 
 # función principal del comando
 def main(Cliente, args) :
-    json, xml, cedible, papel, web, dir, normalizar = parseArgs(args)
+    json, xml, archivo, formato, cedible, papel, web, dir, normalizar = parseArgs(args)
     data = None
     if json :
         data = loadJSON(json)
@@ -48,6 +48,8 @@ def main(Cliente, args) :
     if xml :
         data = loadXML(xml)
         formato = 'xml'
+    if archivo != None and formato != None and formato not in ('json', 'xml') :
+        data = '"'+b64encode(bytes(loadFile(archivo), 'UTF8')).decode('UTF8')+'"'
     if data == None :
         print('Debe especificar un archivo JSON o bien un archivo XML a enviar')
         return 1
@@ -107,6 +109,8 @@ def main(Cliente, args) :
 def parseArgs(args) :
     json = ''
     xml = ''
+    archivo = None
+    formato = None
     cedible = 1
     papel = 0
     web = False
@@ -117,6 +121,10 @@ def parseArgs(args) :
             json = val
         elif var == '--xml' :
             xml = val
+        elif var == '--archivo' :
+            archivo = val
+        elif var == '--formato' :
+            formato = val
         elif var == '--cedible' :
             cedible = val
         elif var == '--papel' :
@@ -127,7 +135,7 @@ def parseArgs(args) :
             dir = val
         elif var == '--normalizar' :
             normalizar = val
-    return json, xml, cedible, papel, web, dir, normalizar
+    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar
 
 # función que carga un JSON
 def loadJSON (archivo) :

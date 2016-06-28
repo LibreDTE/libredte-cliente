@@ -104,9 +104,9 @@ Se adjunta la documentación y ejemplos de ejecución de los comandos existentes
 dte_generar
 ~~~~~~~~~~~
 
-Este comando permite generar a partir de un JSON o un XML el DTE timbrado y
-firmado. Dejará 5 archivos en el directorio que se le indique, estos archivos
-son:
+Este comando permite generar a partir de los datos en cierto formato,
+típicamente un archivo JSON o XML, el DTE timbrado y firmado. Dejará 5 archivos
+en el directorio que se le indique, estos archivos son:
 
 - temporal.json respuesta del servicio web que crea el DTE temporal.
 - emitido.json respuesta del servicio web que crea el DTE real (sin el XML) e incluye el ``track_id`` si el DTE fue enviado al SII.
@@ -131,6 +131,12 @@ Generar DTE a partir de entrada en XML sin normalizar (el XML trae todos los dat
 .. code:: shell
 
     $ libredte-cliente.py dte_generar --hash=1234 --xml=dte.xml --dir=resultado --normalizar=0
+
+Generar DTE a partir de entrada en otros formatos, ejemplo YAML:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_generar --hash=1234 --archivo=dte.yml --formato=yaml --dir=resultado
 
 dte_estado
 ~~~~~~~~~~
