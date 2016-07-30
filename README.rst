@@ -152,3 +152,18 @@ Actualizar el estado de un envío de DTE al SII usando el correo recibido desde 
 .. code:: shell
 
     $ libredte-cliente.py dte_estado --hash=1234 --rut=76192083 --dte=33 --folio=1 --metodo=email
+
+dte_emitido_pdf
+~~~~~~~~~~~~~~~
+
+Descargar PDF y guardar en directorio donde se está llamando al comando con nombre por defecto:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1
+
+Descargar PDF y guardar en una ruta específica con un nombre de PDF personalizado:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf
