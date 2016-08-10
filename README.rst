@@ -167,3 +167,9 @@ Descargar PDF y guardar en una ruta específica con un nombre de PDF personaliza
 .. code:: shell
 
     $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf
+
+Descargar PDF en papel contínuo y guardar en una ruta específica con un nombre de PDF personalizado:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf --papel=80
