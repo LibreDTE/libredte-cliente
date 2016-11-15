@@ -63,71 +63,143 @@ def parseArgs(args) :
             cantidad = val
     return certificacion, csv, cantidad
 
+# función que genera la estadísticas de los contribuyentes activos
+def statsContribuyentesActivos(datos, cantidad) :
+    print()
+    print('Estadística de LibreDTE')
+    print('=======================')
+    print()
+    total = len(datos)
+    # 1-4: promedio, desviación estándar, máximo y mínimo
+    print('Máximo de documentos totales: '+str(maximoDocumentosTotales(datos)))
+    print('Mínimo documentos totales: '+str(minimoDocumentosTotales(datos)))
+    print('Promedio de documentos totales: '+str(promedioDocumentosTotales(datos)))
+    print('Desviación estándar de documentos totales: '+str(desviacionEstandarDocumentosTotales(datos)))
+    print()
+    # 5: contribuyentes que más emiten
+    print('Contribuyentes que más documentos emiten:')
+    contribuyentes = contribuyentesConMasEmision(datos, cantidad)
+    for e in contribuyentes :
+        print('  - '+e['razon_social']+' ('+e['emitidos']+')')
+    print()
+    # 6: contribuyentes que más reciben
+    print('Contribuyentes que más documentos reciben:')
+    contribuyentes = contribuyentesConMasRecepcion(datos, cantidad)
+    for e in contribuyentes :
+        print('  - '+e['razon_social']+' ('+e['recibidos']+')')
+    print()
+    # 7: contribuyentes que más emiten y reciben (total)
+    print('Contribuyentes que más documentos emiten y reciben (total):')
+    contribuyentes = contribuyentesConMasEmisionRecepcion(datos, cantidad)
+    for e in contribuyentes :
+        print('  - '+e['razon_social']+' ('+e['total']+')')
+    print()
+    # 8: contribuyentes que están sobre la cuota
+    print('Contribuyentes que están sobre la cuota:')
+    contribuyentes = contribuyentesSobreCuota(datos)
+    for e in contribuyentes :
+        print('  - '+e['razon_social']+' ('+e['sobre_cuota']+')')
+    print()
+    # 9: usuarios con más de un contribuyente registrado
+    print('Usuarios con más de un contribuyente registrado')
+    usuarios = usuariosConRegistroContribuyentesSuperiorA(datos, 2)
+    for u in usuarios :
+        print('  - '+e['usuario']+' ('+e['contribuyentes']+')')
+    print()
+    # 10: usuarios que pertenecen a ciertos grupos
+    print('Usuarios que pertenecen a los siguientes grupos:')
+    grupos = ['dte_plus', 'lce_plus', 'rrhh_plus', 'inventario_plus']
+    for g in grupos :
+        n = usuariosEnGrupo(datos, g)
+        print('  - '+g+': '+str(n)+' de '+str(total)+' ('+str(round((n/100)*100,2))+'%)')
+    print()
+
 # función que genera un archivo CSV con los datos de los contribuyentes activos
 # Va un contribuyente por línea con las columnas de datos ordenados de la siguiente forma:
 #   rut, razón social, usuario, grupos, nombre, emitidos, recibidos, total, sobre la cuota
 def csvContribuyentesActivos(datos, archivo, sep = ';') :
-    print('Generando archivo '+archivo+'... ¡pronto!')
+    print('Generando archivo '+archivo)
+    # TODO
 
-# función que genera la estadísticas de los contribuyentes activos
-def statsContribuyentesActivos(datos, cantidad) :
-    print('Generando estadística... ¡pronto!')
-    # empresas que más emiten
-    print('Empresas que más documentos emiten:')
-    empresas = statsEmpresasConMasEmision(datos, cantidad)
-    for e in empresas :
-        print('  - '+e['razon_social']+' ('+e['emitidos']+')')
+# función que entrega el máximo de los totales de documentos (emitidos y recibidos)
+# retorna un número entero
+def maximoDocumentosTotales(datos) :
+    maximo = None
+    # TODO
+    return maximo
 
-    # empresas que más reciben
-    print('Empresas que más documentos reciben:')
-    empresas = statsEmpresasConMasRecepcion(datos, cantidad)
-    for e in empresas :
-        print('  - '+e['razon_social']+' ('+e['recibidos']+')')
-    # empresas que más emiten y reciben (total)
-    print('Empresas que más documentos emiten y reciben (total):')
-    empresas = statsEmpresasConMasEmisionRecepcion(datos, cantidad)
-    for e in empresas :
-        print('  - '+e['razon_social']+' ('+e['total']+')')
-    # empresas que están sobre la cuota
-    print('Empresas que están sobre la cuota:')
-    empresas = statsEmpresasSobreCuota(datos)
-    for e in empresas :
-        print('  - '+e['razon_social']+' ('+e['sobre_cuota']+')')
+# función que entrega el mínimo de los totales de documentos (emitidos y recibidos)
+# retorna un número entero
+def minimoDocumentosTotales(datos) :
+    minimo = None
+    # TODO
+    return minimo
 
-# función que entrega un arreglo con las empresas que más documentos emiten
+# función que entrega el promedio (o media) de los totales de documentos (emitidos y recibidos)
+# retorna un número entero
+def promedioDocumentosTotales(datos) :
+    promedio = None
+    # TODO
+    return promedio
+
+# función que entrega la desviación estándar de los totales de documentos (emitidos y recibidos)
+# retorna un número entero
+def desviacionEstandarDocumentosTotales(datos) :
+    desviacion = None
+    # TODO
+    return desviacion
+
+# función que entrega un arreglo con las contribuyentes que más documentos emiten
 # retorna un arreglo de diccionarios con índices: razon_social y emitidos
 # ordenados de mayor a menor emitidos. ejemplo:
 # [{'razon_social': 'empresa 1', 'emitidos': 10}]
-def statsEmpresasConMasEmision(datos, cantidad) :
-    empresas = []
+def contribuyentesConMasEmision(datos, cantidad) :
+    contribuyentes = []
     # TODO
-    return empresas
+    return contribuyentes
 
-# función que entrega un arreglo con las empresas que más documentos reciben
+# función que entrega un arreglo con las contribuyentes que más documentos reciben
 # retorna un arreglo de diccionarios con índices: razon_social y recibidos
 # ordenados de mayor a menor recibidos. ejemplo:
 # [{'razon_social': 'empresa 1', 'recibidos': 10}]
-def statsEmpresasConMasRecepcion(datos, cantidad) :
-    empresas = []
+def contribuyentesConMasRecepcion(datos, cantidad) :
+    contribuyentes = []
     # TODO
-    return empresas
+    return contribuyentes
 
-# función que entrega un arreglo con las empresas que más documentos emiten
+# función que entrega un arreglo con las contribuyentes que más documentos emiten
 # y reciben (total)
 # retorna un arreglo de diccionarios con índices: razon_social y total
 # ordenados de mayor a menor totales. ejemplo:
 # [{'razon_social': 'empresa 1', 'total': 10}]
-def statsEmpresasConMasEmisionRecepcion(datos, cantidad) :
-    empresas = []
+def contribuyentesConMasEmisionRecepcion(datos, cantidad) :
+    contribuyentes = []
     # TODO
-    return empresas
+    return contribuyentes
 
-# función que entrega un arreglo con las empresas que están sobre la cuota
+# función que entrega un arreglo con las contribuyentes que están sobre la cuota
 # retorna un arreglo de diccionarios con índices: razon_social y sobre_cuota
 # ordenados de mayor a menor sobre la cuota. ejemplo:
 # [{'razon_social': 'empresa 1', 'sobre_cuota': 10}]
-def statsEmpresasSobreCuota(datos) :
-    empresas = []
+def contribuyentesSobreCuota(datos) :
+    contribuyentes = []
     # TODO
-    return empresas
+    return contribuyentes
 
+# función que entrega un arreglo con los usuarios que tienen una cantidad igual
+# o superior de contribuyentes registrados a la indicada
+# retorna una arreglo de diccionarios con índices: usuario y contribuyentes
+# ordenados de mayor a menor contribuyentes. ejemplo:
+# [{'usuario': 'delaf', 'contribuyentes': 4}]
+def usuariosConRegistroContribuyentesSuperiorA(datos, cantidad) :
+    usuarios = []
+    # TODO
+    return usuarios
+
+# función que cuenta la cantidad de usuarios que están en cierto grupo
+# se cuenta al usuario tantas veces como contribuyentes existan
+# retorna un número entero con la cantidad de coincidencias
+def usuariosEnGrupo(datos, grupo) :
+    cantidad = 0
+    # TODO
+    return cantidad
