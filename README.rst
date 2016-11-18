@@ -26,9 +26,12 @@ Para poder ejecutar el cliente es necesario tener instalado Python 3 y el SDK
 de LibreDTE para Python:
 
 La instalación de Python 3 depende del sistema operativo, y en el caso de
-GNU/Linux es probable que ya venga incluído. Si utiliza Microsoft Windows deberá
+GNU/Linux es probable que ya venga incluído.
+
+Si utiliza Microsoft Windows deberá
 `descargar e instalar Python 3 <https://www.python.org/downloads/windows>`_,
-marcar la opción "Add Python to PATH".
+marcar la opción "Add Python to PATH". Además revisa la instalación de LXML
+según se describe `aquí <https://github.com/LibreDTE/libredte-sdk-python#lxml-en-microsoft-windows>`_.
 
 Una vez instalado Python 3 deberá instalar, usando PIP, el SDK de LibreDTE. En
 GNU/Linux:
