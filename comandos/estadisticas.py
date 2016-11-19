@@ -80,31 +80,31 @@ def statsContribuyentesActivos(datos, cantidad) :
     print('Contribuyentes que más documentos emiten:')
     contribuyentes = contribuyentesConMasEmision(datos, cantidad)
     for e in contribuyentes :
-        print('  - '+e['razon_social']+' ('+e['emitidos']+')')
+        print('  - '+e['razon_social']+' ('+str(e['emitidos'])+')')
     print()
     # 6: contribuyentes que más reciben
     print('Contribuyentes que más documentos reciben:')
     contribuyentes = contribuyentesConMasRecepcion(datos, cantidad)
     for e in contribuyentes :
-        print('  - '+e['razon_social']+' ('+e['recibidos']+')')
+        print('  - '+e['razon_social']+' ('+str(e['recibidos'])+')')
     print()
     # 7: contribuyentes que más emiten y reciben (total)
     print('Contribuyentes que más documentos emiten y reciben (total):')
     contribuyentes = contribuyentesConMasEmisionRecepcion(datos, cantidad)
     for e in contribuyentes :
-        print('  - '+e['razon_social']+' ('+e['total']+')')
+        print('  - '+e['razon_social']+' ('+str(e['total'])+')')
     print()
     # 8: contribuyentes que están sobre la cuota
     print('Contribuyentes que están sobre la cuota:')
     contribuyentes = contribuyentesSobreCuota(datos)
     for e in contribuyentes :
-        print('  - '+e['razon_social']+' ('+e['sobre_cuota']+')')
+        print('  - '+e['razon_social']+' ('+str(e['sobre_cuota'])+')')
     print()
     # 9: usuarios con más de un contribuyente registrado
     print('Usuarios con más de un contribuyente registrado')
     usuarios = usuariosConRegistroContribuyentesSuperiorA(datos, 2)
     for u in usuarios :
-        print('  - '+e['usuario']+' ('+e['contribuyentes']+')')
+        print('  - '+e['usuario']+' ('+str(e['contribuyentes'])+')')
     print()
     # 10: usuarios que pertenecen a ciertos grupos
     print('Usuarios que pertenecen a los siguientes grupos:')
