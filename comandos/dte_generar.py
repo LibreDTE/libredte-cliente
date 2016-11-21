@@ -36,11 +36,11 @@ import codecs
 options = ''
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=']
+long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML']
 
 # función principal del comando
 def main(Cliente, args) :
-    json, xml, archivo, formato, cedible, papel, web, dir, normalizar = parseArgs(args)
+    json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML = parseArgs(args)
     data = None
     if json :
         data = loadJSON(json)
@@ -67,7 +67,7 @@ def main(Cliente, args) :
     with open(dir+'/temporal.json', 'w') as f:
         f.write(json_encode(emitir.json()))
     # crear DTE real
-    generar = Cliente.post('/dte/documentos/generar', emitir.json())
+    generar = Cliente.post('/dte/documentos/generar?getXML='+str(getXML), emitir.json())
     if generar.status_code!=200 :
         print('Error al generar DTE real: '+json_encode(generar.json()))
         return generar.status_code
@@ -76,8 +76,9 @@ def main(Cliente, args) :
     dte_emitido['xml'] = None
     with open(dir+'/emitido.json', 'w') as f:
         f.write(json_encode(dte_emitido))
-    with codecs.open(dir+'/emitido.xml', 'w', 'iso-8859-1') as f:
-        f.write(b64decode(xml_emitido).decode('iso-8859-1'))
+    if getXML :
+        with codecs.open(dir+'/emitido.xml', 'w', 'iso-8859-1') as f:
+            f.write(b64decode(xml_emitido).decode('iso-8859-1'))
     columnas = ['emisor', 'dte', 'folio', 'certificacion', 'tasa', 'fecha', 'sucursal_sii', 'receptor', 'exento', 'neto', 'iva', 'total', 'usuario', 'track_id']
     valores = []
     for col in columnas :
@@ -89,14 +90,7 @@ def main(Cliente, args) :
         f.write(';'.join(columnas)+"\n")
         f.write(';'.join(valores)+"\n")
     # obtener el PDF del DTE
-    generar_pdf_request = {
-        'xml': generar.json()['xml'],
-        'compress': False,
-        'cedible': cedible,
-        'papelContinuo': papel,
-        'webVerificacion': web
-    }
-    generar_pdf = Cliente.post('/dte/documentos/generar_pdf', generar_pdf_request)
+    generar_pdf = Cliente.get('/dte/dte_emitidos/pdf/'+str(generar.json()['dte'])+'/'+str(generar.json()['folio'])+'/'+str(generar.json()['emisor'])+'?cedible='+str(cedible)+'&papelContinuo='+str(papel))
     if generar_pdf.status_code!=200 :
         print('Error al generar PDF del DTE: '+json_encode(generar_pdf.json()))
         return generar_pdf.status_code
@@ -116,6 +110,7 @@ def parseArgs(args) :
     web = False
     dir = ''
     normalizar = 1
+    getXML = 0
     for var, val in args:
         if var == '--json' :
             json = val
@@ -135,7 +130,9 @@ def parseArgs(args) :
             dir = val
         elif var == '--normalizar' :
             normalizar = val
-    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar
+        elif var == '--getXML' :
+            getXML = 1
+    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML
 
 # función que carga un JSON
 def loadJSON (archivo) :

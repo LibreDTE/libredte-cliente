@@ -114,7 +114,7 @@ en el directorio que se le indique, estos archivos son:
 - temporal.json respuesta del servicio web que crea el DTE temporal.
 - emitido.json respuesta del servicio web que crea el DTE real (sin el XML) e incluye el ``track_id`` si el DTE fue enviado al SII.
 - emitido.csv mismos datos que emitido.json, pero en un archivo plano separado por punto y coma.
-- emitido.xml archivo XML del documento real.
+- emitido.xml archivo XML del documento real (sólo si se pasó la opción ``--getXML`` al comando).
 - emitido.pdf archivo PDF del documento real, con copia cedible por defecto.
 
 Generar DTE a partir de entrada en JSON:
