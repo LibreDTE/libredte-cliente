@@ -104,7 +104,7 @@ def statsContribuyentesActivos(datos, cantidad) :
     print('Usuarios con más de un contribuyente registrado')
     usuarios = usuariosConRegistroContribuyentesSuperiorA(datos, 2)
     for u in usuarios :
-        print('  - '+e['usuario']+' ('+str(e['contribuyentes'])+')')
+        print('  - '+u['usuario']+' ('+str(u['contribuyentes'])+')')
     print()
     # 10: usuarios que pertenecen a ciertos grupos
     print('Usuarios que pertenecen a los siguientes grupos:')
