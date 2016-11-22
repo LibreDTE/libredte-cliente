@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para consultar las estadísticas de la aplicación web de LibreDTE
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2016-11-10
+@version 2016-11-22
 """
 
 # opciones en formato corto
@@ -71,6 +71,7 @@ def statsContribuyentesActivos(datos, cantidad) :
     print()
     total = len(datos)
     # 1-4: promedio, desviación estándar, máximo y mínimo
+    print('Total de empresas: '+str(total))
     print('Máximo de documentos totales: '+str(maximoDocumentosTotales(datos)))
     print('Mínimo documentos totales: '+str(minimoDocumentosTotales(datos)))
     print('Promedio de documentos totales: '+str(promedioDocumentosTotales(datos)))
@@ -111,7 +112,7 @@ def statsContribuyentesActivos(datos, cantidad) :
     grupos = ['dte_plus', 'lce_plus', 'rrhh_plus', 'inventario_plus']
     for g in grupos :
         n = usuariosEnGrupo(datos, g)
-        print('  - '+g+': '+str(n)+' de '+str(total)+' ('+str(round((n/100)*100,2))+'%)')
+        print('  - '+g+': '+str(n)+' de '+str(total)+' ('+str(round((n/total)*100,2))+'%)')
     print()
 
 # función que genera un archivo CSV con los datos de los contribuyentes activos
