@@ -103,7 +103,7 @@ def statsContribuyentesActivos(datos, cantidad) :
     print()
     # 9: usuarios con más de un contribuyente registrado
     print('Usuarios con más de un contribuyente registrado')
-    usuarios = usuariosConRegistroContribuyentesSuperiorA(datos, 2)
+    usuarios = usuariosConIgualMayorCantidadContribuyentes(datos, 2)
     for u in usuarios :
         print('  - '+u['usuario']+' ('+str(u['contribuyentes'])+')')
     print()
@@ -192,7 +192,7 @@ def contribuyentesSobreCuota(datos) :
 # retorna una arreglo de diccionarios con índices: usuario y contribuyentes
 # ordenados de mayor a menor contribuyentes. ejemplo:
 # [{'usuario': 'delaf', 'contribuyentes': 4}]
-def usuariosConRegistroContribuyentesSuperiorA(datos, cantidad) :
+def usuariosConIgualMayorCantidadContribuyentes(datos, cantidad) :
     usuarios = []
     # TODO
     return usuarios
