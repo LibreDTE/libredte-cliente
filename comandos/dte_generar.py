@@ -64,14 +64,22 @@ def main(Cliente, args) :
     if emitir.status_code!=200 :
         print('Error al emitir DTE temporal: '+json_encode(emitir.json()))
         return emitir.status_code
-    with open(dir+'/temporal.json', 'w') as f:
-        f.write(json_encode(emitir.json()))
+    try :
+        with open(dir+'/temporal.json', 'w') as f:
+            f.write(json_encode(emitir.json()))
+    except ValueError :
+        print('Error al recibir JSON DTE temporal, se recibió: '+emitir.text)
+        return 1
     # crear DTE real
     generar = Cliente.post('/dte/documentos/generar?getXML='+str(getXML), emitir.json())
     if generar.status_code!=200 :
         print('Error al generar DTE real: '+json_encode(generar.json()))
         return generar.status_code
-    dte_emitido = generar.json()
+    try :
+        dte_emitido = generar.json()
+    except ValueError :
+        print('Error al recibir JSON DTE real, se recibió: '+generar.text)
+        return 1
     xml_emitido = dte_emitido['xml']
     dte_emitido['xml'] = None
     with open(dir+'/emitido.json', 'w') as f:
