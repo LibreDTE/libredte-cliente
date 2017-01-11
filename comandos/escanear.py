@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para escanear timbres de DTEs y agregar sus datos a un CSV
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2016-08-25
+@version 2017-01-11
 """
 
 # módulos usados por el comando
@@ -65,7 +65,7 @@ def parseArgs(args) :
             csv = val
         if var == '--modo' :
             modo = val
-        if separador == '--separador' :
+        if var == '--separador' :
             separador = val
     return csv, modo, separador
 
