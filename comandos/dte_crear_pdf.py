@@ -20,7 +20,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 
 """
-Comando para escanear timbres de DTEs y agregar sus datos a un CSV
+Comando para crear un PDF de una boleta desde un xml
 @author Fernando Lizana Nuñez (f.lizananuez[at]uandresbello.edu)
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
 @version 2017-01-16
