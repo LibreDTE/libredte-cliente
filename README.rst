@@ -176,3 +176,20 @@ Descargar PDF en papel contínuo y guardar en una ruta específica con un nombre
 .. code:: shell
 
     $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf --papel=80
+
+dte_crear_pdf
+~~~~~~~~~~~~~
+
+Crear un PDF localmente a partir del XML de un DTE, por el momento sólo se soportan boletas.
+
+Crear PDF con 1 copia tributaria (por defecto):
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_crear_pdf --xml=documento.xml --pdf=documento.pdf
+
+Crear PDF con 2 copias tributarias:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_crear_pdf --xml=documento.xml --pdf=documento.pdf --copias_tributarias=2
