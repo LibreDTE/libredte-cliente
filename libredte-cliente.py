@@ -23,35 +23,63 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Cliente LibreDTE para integración con servicios web desde línea de comandos
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2016-06-24
+@version 2017-01-28
 """
 
 # módulos que se usarán
 import sys
 import getopt
 import os
+import yaml
 from libredte.sdk import LibreDTE
 
-# configuración predeterminada (no modificar acá, usar opciones)
-hash = '' # --hash=HASH_USUARIO
-url = 'https://libredte.cl' # --url=NUEVA_URL
-
 # función con modo de uso
-def usage() :
+def usage(error = False, exit = 0) :
     print()
     print('LibreDTE ¡facturación electrónica libre para Chile!                  libredte.cl')
     print()
+    if error :
+        print('[Error] '+error)
+        print()
     print('Modo de uso:')
     print('  $ '+os.path.basename(sys.argv[0])+' <COMANDO> --hash=<HASH USUARIO> <OPCIONES>')
     print()
+    if exit :
+        sys.exit(exit)
 
 # cargar comando (módulo) que se desea usar
+cmd = sys.argv[1]
 if len(sys.argv) == 1 :
-    usage()
-    sys.exit(2)
-main = getattr(__import__("comandos."+sys.argv[1], fromlist=["main"]), "main")
-options = getattr(__import__("comandos."+sys.argv[1], fromlist=["options"]), "options")
-long_options = getattr(__import__("comandos."+sys.argv[1], fromlist=["long_options"]), "long_options")
+    usage('Falta indicar el comando que se desea ejecutar', 2)
+if not os.path.isfile("comandos/"+cmd+".py") :
+    usage('Comando solicitado "'+cmd+'" no existe', 3)
+try :
+    main = getattr(__import__("comandos."+cmd, fromlist=["main"]), "main")
+except AttributeError :
+    usage('No se encontró la función "main" en el módulo "'+cmd+'"', 4)
+try :
+    options = getattr(__import__("comandos."+cmd, fromlist=["options"]), "options")
+except AttributeError :
+    options = ''
+try :
+    long_options = getattr(__import__("comandos."+cmd, fromlist=["long_options"]), "long_options")
+except AttributeError :
+    long_options = []
+
+# configuración predeterminada (no modificar acá, usar parámetros o archivo config.yml)
+hash = '' # --hash=HASH_USUARIO
+url = 'https://libredte.cl' # --url=NUEVA_URL
+if os.path.isfile("config.yml") :
+    config = yaml.safe_load(open("config.yml"))
+    if not config :
+        config = {}
+    if 'auth' in config and config['auth'] :
+        if 'hash' in config['auth'] :
+            hash = config['auth']['hash']
+        if 'url' in config['auth'] :
+            url = config['auth']['url']
+else :
+    config = {}
 
 # definir opciones por defecto
 if len(options) :
@@ -63,8 +91,7 @@ long_options += ['help', 'url=', 'hash=']
 try:
     opts, args = getopt.getopt(sys.argv[2:], options, long_options)
 except getopt.GetoptError:
-    usage()
-    sys.exit(2)
+    usage('Ocurrió un error al obtener los parámetros del comando', 5)
 
 # asignar url y hash si se indicaron
 for var, val in opts:
@@ -80,4 +107,4 @@ for var, val in opts:
 Cliente = LibreDTE(hash, url)
 
 # lanzar comando con sus opciones
-sys.exit(main(Cliente, opts))
+sys.exit(main(Cliente, opts, config))

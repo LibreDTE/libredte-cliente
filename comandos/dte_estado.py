@@ -25,14 +25,11 @@ Comando para actualizar el estado de un DTE enviado al SII
 @version 2016-06-25
 """
 
-# opciones en formato corto
-options = ''
-
 # opciones en formato largo
 long_options = ['dte=', 'folio=', 'rut=', 'metodo=']
 
 # función principal del comando
-def main (Cliente, args) :
+def main (Cliente, args, config) :
     dte, folio, rut, metodo = parseArgs(args)
     estado = Cliente.get('/dte/dte_emitidos/actualizar_estado/'+str(dte)+'/'+str(folio)+'/'+str(rut)+'/'+str(metodo))
     if estado.status_code!=200 :

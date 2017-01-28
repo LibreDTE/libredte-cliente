@@ -25,14 +25,11 @@ Comando para obtener el PDF de un DTE previamente emitido
 @version 2016-08-09
 """
 
-# opciones en formato corto
-options = ''
-
 # opciones en formato largo
 long_options = ['dte=', 'folio=', 'rut=', 'cedible=', 'papel=', 'compress=', 'copias_tributarias=', 'copias_cedibles=', 'pdf=']
 
 # función principal del comando
-def main (Cliente, args) :
+def main (Cliente, args, config) :
     dte, folio, rut, cedible, papel, compress, copias_tributarias, copias_cedibles, pdf = parseArgs(args)
     if not pdf :
         pdf = 'dte_'+str(rut)+'_T'+str(dte)+'F'+str(folio)+'.pdf'

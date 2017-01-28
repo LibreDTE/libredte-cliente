@@ -36,14 +36,11 @@ import os.path
 from lxml import etree
 import datetime, locale
 
-# opciones en formato corto
-options = ''
-
 # opciones en formato largo
 long_options = ['xml=', 'pdf=', 'copias_tributarias=', 'copias_cedibles=', 'logo=']
 
 # función principal del comando
-def main (Cliente, args) :
+def main (Cliente, args, config) :
     xml, pdf, logo, copias_tributarias, copias_cedibles = parseArgs(args)
     if xml == None :
         print('Debe indicar archivo XML')

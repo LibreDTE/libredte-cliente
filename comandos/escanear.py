@@ -28,14 +28,11 @@ Comando para escanear timbres de DTEs y agregar sus datos a un CSV
 # módulos usados por el comando
 from lxml import objectify
 
-# opciones en formato corto
-options = ''
-
 # opciones en formato largo
 long_options = ['csv=']
 
 # función principal del comando
-def main (Cliente, args) :
+def main (Cliente, args, config) :
     csv, modo, s = parseArgs(args)
     if csv == '':
         print('Debe especificar archivo CSV donde se guardarán los DTE escaneados')

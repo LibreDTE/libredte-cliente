@@ -20,9 +20,9 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 
 """
-Comando para generar un DTE a partir de los datos de JSON o un XML
+Comando para sincronizar documentos emitidos de manera local con el servidor de LibreDTE
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2016-06-25
+@version 2017-01-28
 """
 
 # módulos usados
@@ -33,10 +33,12 @@ from json import loads as json_decode
 import codecs
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML']
+long_options = ['dir=']
 
 # función principal del comando
 def main(Cliente, args, config) :
+    print('Sincronizando')
+"""
     json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML = parseArgs(args)
     data = None
     if json :
@@ -152,3 +154,4 @@ def loadFile (archivo) :
     with open(archivo, 'r') as content_file:
         content = content_file.read()
     return content
+"""

@@ -1,0 +1,18 @@
+#
+# Archivo de configuración para el cliente de LibreDTE
+#
+# Evita tener que estar pasando ciertos parámetros por la línea de comandos.
+#
+# En ambientes compartidos es obligatorio su uso, ya que así no se puede
+# visualizar el parámetro --hash en la lista de procesos en ejecución.
+#
+# Recordar tener este archivo con permisos 0600 ¡siempre!
+#
+
+# configuración para autenticación en LibreDTE
+auth:
+    url: https://libredte.cl
+    hash:
+
+# configuraciones para comandos
+comandos:

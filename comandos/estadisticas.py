@@ -44,14 +44,11 @@ objetivo de mostrar las estadísticas.
 @version 2016-12-10
 """
 
-# opciones en formato corto
-options = ''
-
 # opciones en formato largo
 long_options = ['certificacion', 'csv=', 'cantidad=']
 
 # función principal del comando
-def main (Cliente, args) :
+def main (Cliente, args, config) :
     certificacion, csv, cantidad = parseArgs(args)
     if certificacion :
         ambiente = 'certificacion'
