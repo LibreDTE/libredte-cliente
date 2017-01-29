@@ -21,7 +21,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 
 """
 Comando para imprimir en la impresora por defecto y en una impresora en específico
-@author TODO
+@author Fernando Lizana Nuñez (f.lizananuez[at]uandresbello.edu)
 @version 2017-01-11
 """
 '''
