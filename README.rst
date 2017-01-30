@@ -193,3 +193,10 @@ Crear PDF con 2 copias tributarias:
 .. code:: shell
 
     $ libredte-cliente.py dte_crear_pdf --xml=documento.xml --pdf=documento.pdf --copias_tributarias=2
+
+dte_sincronizar
+~~~~~~~~~~~~~
+
+Enviar todos los archivos XML de un directorio al servidor de LibreDTE:
+
+    $ libredte-cliente.py dte_sincronizar --hash=1234 --dir=/ruta/a/xmls -vv
