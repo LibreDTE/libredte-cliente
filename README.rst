@@ -199,4 +199,6 @@ dte_sincronizar
 
 Enviar todos los archivos XML de un directorio al servidor de LibreDTE:
 
+.. code:: shell
+
     $ libredte-cliente.py dte_sincronizar --hash=1234 --dir=/ruta/a/xmls -vv
