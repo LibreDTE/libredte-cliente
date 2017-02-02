@@ -72,8 +72,8 @@ except AttributeError :
 # configuración predeterminada (no modificar acá, usar parámetros o archivo config.yml)
 hash = '' # --hash=HASH_USUARIO
 url = 'https://libredte.cl' # --url=NUEVA_URL
-if os.path.isfile("config.yml") :
-    config = yaml.safe_load(open("config.yml"))
+if os.path.isfile(dirname+"/config.yml") :
+    config = yaml.safe_load(open(dirname+"/config.yml"))
     if not config :
         config = {}
     if 'auth' in config and config['auth'] :
