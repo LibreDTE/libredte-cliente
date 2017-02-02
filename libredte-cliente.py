@@ -23,7 +23,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Cliente LibreDTE para integración con servicios web desde línea de comandos
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-01-28
+@version 2017-02-02
 """
 
 # módulos que se usarán
@@ -48,10 +48,13 @@ def usage(error = False, exit = 0) :
         sys.exit(exit)
 
 # cargar comando (módulo) que se desea usar
-cmd = sys.argv[1]
 if len(sys.argv) == 1 :
     usage('Falta indicar el comando que se desea ejecutar', 2)
-if not os.path.isfile("comandos/"+cmd+".py") :
+cmd = sys.argv[1]
+dirname = os.path.dirname(__file__)
+if not dirname :
+    dirname = '.'
+if not os.path.isfile(dirname+"/comandos/"+cmd+".py") :
     usage('Comando solicitado "'+cmd+'" no existe', 3)
 try :
     main = getattr(__import__("comandos."+cmd, fromlist=["main"]), "main")

@@ -123,8 +123,8 @@ def statsContribuyentesActivos(datos, cantidad) :
     for u in usuarios :
         print('  - '+u['usuario']+' ('+str(u['contribuyentes'])+')')
     print()
-    # 10: usuarios que pertenecen a ciertos grupos
-    print('Usuarios que pertenecen a los siguientes grupos:')
+    # 10: empresas que pertenecen a ciertos grupos
+    print('Empresas que pertenecen a los siguientes grupos:')
     grupos = ['dte_plus', 'lce_plus', 'rrhh_plus', 'inventario_plus']
     for g in grupos :
         n = usuariosEnGrupo(datos, g)
