@@ -194,6 +194,30 @@ Crear PDF con 2 copias tributarias:
 
     $ libredte-cliente.py dte_crear_pdf --xml=documento.xml --pdf=documento.pdf --copias_tributarias=2
 
+imprimir
+~~~~~~~~
+
+Permite imprimir un archivo PDF directamente en la impresora.
+
+En GNU/Linux se deberá instalar los paquetes de desarrollo de CUPS y pycups:
+
+.. code:: shell
+
+    # apt-get install libredte-cliente.py
+    # pip3 install pycups
+
+Imprimir en la impresora por defecto:
+
+.. code:: shell
+
+    $ libredte-cliente.py imprimir --pdf=factura.pdf
+
+Imprimir indicando la impresora:
+
+.. code:: shell
+
+    $ libredte-cliente.py imprimir --pdf=factura.pdf --impresora=Brother_DCP-9020CDN
+
 dte_sincronizar
 ~~~~~~~~~~~~~
 
