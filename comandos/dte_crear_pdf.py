@@ -37,11 +37,11 @@ from lxml import etree
 import datetime, locale
 
 # opciones en formato largo
-long_options = ['xml=', 'pdf=', 'copias_tributarias=', 'copias_cedibles=', 'logo=']
+long_options = ['xml=', 'pdf=', 'copias_tributarias=', 'copias_cedibles=', 'logo=', 'webVerificacion=']
 
 # función principal del comando
 def main (Cliente, args, config) :
-    xml, pdf, logo, copias_tributarias, copias_cedibles = parseArgs(args)
+    xml, pdf, copias_tributarias, copias_cedibles, logo, webVerificacion = parseArgs(args)
     if xml == None :
         print('Debe indicar archivo XML')
         return 1
@@ -50,12 +50,13 @@ def main (Cliente, args, config) :
         print('No fue posible parsear el XML')
         return 2
     if oDte.getTipo() == 39 or oDte.getTipo() == 41 :
-        oPdf = BoletaPdf(oDte.getDatos())
+        oPdf = BoletaPdf(oDte.getDatos(), oDte.getCaratula())
+        if webVerificacion is not None :
+            oPdf.setWebVerificacion(webVerificacion)
     else :
-        oPdf = DtePdf(oDte.getDatos())
-    #if logo is not None:
-    #    oPdf.setLogo(logo)
-    oPdf.setLogo(logo)
+        oPdf = DtePdf(oDte.getDatos(), oDte.getCaratula())
+    if logo is not None:
+        oPdf.setLogo(logo)
     oPdf.setCopias(copias_tributarias, copias_cedibles)
     oPdf.guardar(pdf)
 
@@ -63,21 +64,24 @@ def main (Cliente, args, config) :
 def parseArgs(args) :
     xml = None
     pdf = 'dte.pdf'
-    logo = None
     copias_tributarias = 1
     copias_cedibles = 0
+    logo = None
+    webVerificacion = None
     for var, val in args:
         if var == '--xml' :
             xml = val
         elif var == '--pdf' :
             pdf = val
-        elif var == '--logo' :
-            logo = val
         elif var == '--copias_tributarias' :
             copias_tributarias = int(val)
         elif var == '--copias_cedibles' :
             copias_cedibles = int(val)
-    return xml, pdf, logo, copias_tributarias, copias_cedibles
+        elif var == '--logo' :
+            logo = val
+        elif var == '--webVerificacion' :
+            webVerificacion = val
+    return xml, pdf, copias_tributarias, copias_cedibles, logo, webVerificacion
 
 # clase con datos del SII
 class Sii :
@@ -108,6 +112,7 @@ class Sii :
 # clase con el objeto que representa el DTE
 class Dte:
 
+    caratula = None # objeto con los datos de la carátula del envío del DTE
     datos = None # objeto con los datos del DTE parseado desde el XML (tag Documento)
 
     # método que carga el XML del DTE
@@ -124,12 +129,17 @@ class Dte:
         oXML = objectify.fromstring(datos_xml)
         if oXML is None :
             return False
+        self.caratula = oXML.SetDTE.Caratula
         self.datos = oXML.SetDTE.DTE.Documento
         return True
 
     # método que entrega el objeto del DTE
     def getDatos(self) :
         return self.datos
+
+    # método que entrega el objeto de la carátula
+    def getCaratula(self) :
+        return self.caratula
 
     # método que entrega el tipo de documento
     def getTipo(self) :
@@ -138,15 +148,17 @@ class Dte:
 # clase base que representa el PDF
 class Pdf(FPDF):
 
+    caratula = None # caratula del DTE que se deben usar para construir el PDF
     datos = None # datos del DTE que se deben usar para construir el PDF
     logo = None # ruta al archivo con el logo del DTE
     copias_tributarias = 1 # cantidad de hojas con la versión tributaria
     copias_cedibles = 0 # cantidad de hojas con la versión cedible
 
     # constructor de la clase, asigna los datos del PDF
-    def __init__(self, datos) :
+    def __init__(self, datos, caratula) :
         super(Pdf, self).__init__('P', 'mm', 'Letter')
         self.datos = datos
+        self.caratula = caratula
 
     # método que establece el pié de página para cada página
     def footer(self):
@@ -159,11 +171,8 @@ class Pdf(FPDF):
 
     # método que asigna el logo que se usará en el PDF
     def setLogo(self, archivo_logo) :
-        if archivo_logo is not None:
-            if os.path.isfile(archivo_logo) :
-                self.logo = archivo_logo
-        else:
-            self.logo="No existe"
+        if archivo_logo is not None and os.path.isfile(archivo_logo) :
+            self.logo = archivo_logo
 
     # método que asigna las copias que se deben generar
     def setCopias(self, copias_tributarias, copias_cedibles = 0) :
@@ -209,22 +218,38 @@ class Pdf(FPDF):
             return self.num(cantidad[0:cantidad.find(",")])+ cantidad[cantidad.find(","):]
         else:
             return self.num(cantidad)#si la cantidad es un número entero
+
     # método para agregar los puntos a los números ignorando al último dígito
     def rut(self, rut):
         A = str(rut).split("-")
         return "{:,}".format(int(A[0])).replace(",",".")+"-"+A[1]
-    def Fecha_Periodo(self,fecha):#función que recibe las fechas del periodo, y la devuelve invertida y con un "/" en vez de un "-"
+
+    # método que recibe las fechas del periodo, y la devuelve invertida y con un "/" en vez de un "-"
+    def Fecha_Periodo(self,fecha):
         ArregloFecha=str(fecha).split("-")
         ArregloFecha.reverse()
         return str("/".join(ArregloFecha))
 
+    # método que entrega el número de resolución y año que corresponden al DTE
+    def getResolucion(self) :
+        return str(self.caratula.NroResol)+' de '+str(self.caratula.FchResol)[0:4]
+
 # clase que extiende al PDF para crear PDF de todos los DTE (menos boletas)
 class DtePdf(Pdf):
+
+    webVerificacion = 'www.sii.cl'
+
     def guardar(self, archivo_pdf) :
         print('No está soportada la creación de PDF de facturas u otros DTE (sólo boletas)')
 
 # clase que extiende al PDF para crear PDF de las boletas
 class BoletaPdf(Pdf):
+
+    webVerificacion = 'libredte.cl/boletas'
+
+    def setWebVerificacion(self, web) :
+        self.webVerificacion = web
+
     def guardar(self, archivo_pdf) :
         for i in range(self.copias_tributarias) :
             self.agregar()
@@ -233,11 +258,11 @@ class BoletaPdf(Pdf):
 
     def agregar(self) :
         self.add_page()
-        if self.logo=="No existe":
-            self.AgregarNoLogo()
-        else:
-            self.AgregarLogo()
+        if self.logo is not None:
+            self.agregarLogo()
             self.agregarEmisor()
+        else:
+            self.agregarEmisorSinLogo()
         self.agregarFolio()
         self.agregarReceptor()
         self.agregarExtraInfo()
@@ -245,68 +270,11 @@ class BoletaPdf(Pdf):
         self.agregarObservacion()
         self.agregarTotales()
         self.agregarTimbre()
-        
 
-    def AgregarNoLogo(self):
-        self.set_text_color(0,64,128) # establesco texto de color AZUL OSCURO
-        self.set_font("Arial","B",14)
-        self.set_xy(10,10)
-        try:
-            if str(self.datos.Encabezado.Emisor.RznSocEmisor):
-                self.multi_cell(w=110, h=5,txt=str(self.datos.Encabezado.Emisor.RznSocEmisor),border = 0, align= 'L', fill= False)
-        except:
-            try:
-                self.multi_cell(w=110, h=5,txt=str(self.datos.Encabezado.Emisor.RznSoc),border = 0, align= 'L', fill= False)
-            except:
-                pass
-        self.ln(3)
-        self.set_text_color(0, 0, 0)#Color negro
-        self.set_font("Arial","B",10)
-        try:
-            if str(self.datos.Encabezado.Emisor.GiroEmisor):
-                self.cell(0,0,str(self.datos.Encabezado.Emisor.GiroEmisor))
-        except:
-            try:
-                if str(self.datos.Encabezado.Emisor.GiroEmis):
-                    self.cell(0,0,str(self.datos.Encabezado.Emisor.GiroEmis))
-            except:
-                pass
-        self.ln(3)
-        self.cell(0,0,str(self.datos.Encabezado.Emisor.DirOrigen)+","+str(self.datos.Encabezado.Emisor.CmnaOrigen))
-        self.ln(3)
-        try:
-            if str(self.datos.Encabezado.Emisor.Telefono) and str(self.datos.Encabezado.Emisor.CorreoEmisor):
-                
-                self.cell(0,0,str(self.datos.Encabezado.Emisor.Telefono)+" / "+str(self.datos.Encabezado.Emisor.CorreoEmisor))#Veo si existe en teléfono y el correo, OPCIONAL
-        except:
-            try:#si no existe, observo si por lo menos existe el teléfono
-                if str(self.datos.Encabezado.Emisor.Telefono):
-                    self.cell(0,0,str(self.datos.Encabezado.Emisor.Telefono))
-            except:
-                try:#si no existe el teléfono, veo si existe el correo
-                    if str(self.datos.Encabezado.Emisor.CorreoEmisor):
-                        self.cell(0,0,str(self.datos.Encabezado.Emisor.CorreoEmisor))
-                except:
-                    pass#si no existe ninguno, simplemente no se escribe nada
-    def AgregarLogo(self):
+    def agregarLogo(self):
         self.image(self.logo,10,10,20,20)
-    def   agregarFolio(self) :
-        self.set_text_color(255, 0, 0) # establesco el color de texto rojo
-        self.set_line_width(.5)
-        self.set_draw_color(255, 0, 0) # establesco las figuras como color rojo
-        self.rect(125,10,75,25)
-        self.set_font("Arial","B",14)
-        self.set_xy(125,17)#aliniado con el cuadrado
-        self.cell(ln=0,h=0, align='C',w=75 ,txt="R.U.T.: "+str(self.rut(self.datos.Encabezado.Emisor.RUTEmisor)), border=0)#Así está centrado
-        self.set_xy(133,23)
-        self.cell(0,0,"BOLETA ELECTRÓNICA")
-        self.set_xy(125,28)
-        self.cell(ln=0,h=0, align='C',w=75, txt=("N° "+str(self.datos.Encabezado.IdDoc.Folio)), border=0)#también está centrado
-        self.set_font("Arial","B",10)
-        self.set_xy(125,37)
-        self.cell(ln=0,h=0,align='C',w=75,txt="S.I.I. - "+Sii.getDireccionRegional(self.datos.Encabezado.Emisor.CmnaOrigen.text),border=0)
+
     def agregarEmisor(self) :
-        
         self.set_text_color(0,64,128) # establesco texto de color azul oscuro
         self.set_font("Arial","B",14)
         self.set_xy(40,10)
@@ -335,7 +303,65 @@ class BoletaPdf(Pdf):
         self.ln(3)
         self.set_x(40)
         self.cell(0,0,str(self.datos.Encabezado.Emisor.DirOrigen+", "+self.datos.Encabezado.Emisor.CmnaOrigen))
-        
+
+    def agregarEmisorSinLogo(self):
+        self.set_text_color(0,64,128) # establesco texto de color AZUL OSCURO
+        self.set_font("Arial","B",14)
+        self.set_xy(10,10)
+        try:
+            if str(self.datos.Encabezado.Emisor.RznSocEmisor):
+                self.multi_cell(w=110, h=5,txt=str(self.datos.Encabezado.Emisor.RznSocEmisor),border = 0, align= 'L', fill= False)
+        except:
+            try:
+                self.multi_cell(w=110, h=5,txt=str(self.datos.Encabezado.Emisor.RznSoc),border = 0, align= 'L', fill= False)
+            except:
+                pass
+        self.ln(3)
+        self.set_text_color(0, 0, 0)#Color negro
+        self.set_font("Arial","B",10)
+        try:
+            if str(self.datos.Encabezado.Emisor.GiroEmisor):
+                self.cell(0,0,str(self.datos.Encabezado.Emisor.GiroEmisor))
+        except:
+            try:
+                if str(self.datos.Encabezado.Emisor.GiroEmis):
+                    self.cell(0,0,str(self.datos.Encabezado.Emisor.GiroEmis))
+            except:
+                pass
+        self.ln(3)
+        self.cell(0,0,str(self.datos.Encabezado.Emisor.DirOrigen)+", "+str(self.datos.Encabezado.Emisor.CmnaOrigen))
+        self.ln(3)
+        try:
+            if str(self.datos.Encabezado.Emisor.Telefono) and str(self.datos.Encabezado.Emisor.CorreoEmisor):
+
+                self.cell(0,0,str(self.datos.Encabezado.Emisor.Telefono)+" / "+str(self.datos.Encabezado.Emisor.CorreoEmisor))#Veo si existe en teléfono y el correo, OPCIONAL
+        except:
+            try:#si no existe, observo si por lo menos existe el teléfono
+                if str(self.datos.Encabezado.Emisor.Telefono):
+                    self.cell(0,0,str(self.datos.Encabezado.Emisor.Telefono))
+            except:
+                try:#si no existe el teléfono, veo si existe el correo
+                    if str(self.datos.Encabezado.Emisor.CorreoEmisor):
+                        self.cell(0,0,str(self.datos.Encabezado.Emisor.CorreoEmisor))
+                except:
+                    pass#si no existe ninguno, simplemente no se escribe nada
+
+    def agregarFolio(self) :
+        self.set_text_color(255, 0, 0) # establesco el color de texto rojo
+        self.set_line_width(.5)
+        self.set_draw_color(255, 0, 0) # establesco las figuras como color rojo
+        self.rect(125,10,75,25)
+        self.set_font("Arial","B",14)
+        self.set_xy(125,17)#aliniado con el cuadrado
+        self.cell(ln=0,h=0, align='C',w=75 ,txt="R.U.T.: "+str(self.rut(self.datos.Encabezado.Emisor.RUTEmisor)), border=0)#Así está centrado
+        self.set_xy(133,23)
+        self.cell(0,0,"BOLETA ELECTRÓNICA")
+        self.set_xy(125,28)
+        self.cell(ln=0,h=0, align='C',w=75, txt=("N° "+str(self.datos.Encabezado.IdDoc.Folio)), border=0)#también está centrado
+        self.set_font("Arial","B",10)
+        self.set_xy(125,37)
+        self.cell(ln=0,h=0,align='C',w=75,txt="S.I.I. - "+Sii.getDireccionRegional(self.datos.Encabezado.Emisor.CmnaOrigen.text),border=0)
+
     def agregarReceptor(self) :
         self.set_text_color(0, 0, 0)
         if str(self.datos.Encabezado.Receptor.RUTRecep)!="66666666-6":
@@ -348,7 +374,7 @@ class BoletaPdf(Pdf):
         else:
             pass
         try:
-            if str(self.datos.Encabezado.Receptor.RznSocRecep):
+            if str(self.datos.Encabezado.Receptor.RznSocRecep) :
                 self.set_font("Arial","B",9)
                 self.set_xy(7,49)
                 self.cell(0,0,"Señor(es) :")
@@ -357,33 +383,31 @@ class BoletaPdf(Pdf):
                 self.cell(0,0,str(self.datos.Encabezado.Receptor.RznSocRecep))
         except:
             pass
-        try:#
+        try:
             self.set_font("Arial","B",9)
             self.set_xy(7,54)
-            if str(self.datos.Encabezado.Receptor.DirRecep) and str(self.datos.Encabezado.Receptor.CmnaRecep):    
+            if str(self.datos.Encabezado.Receptor.DirRecep) and str(self.datos.Encabezado.Receptor.CmnaRecep) :
                 self.cell(0,0,"Dirección :")
                 self.set_font("Arial","",9)
                 self.set_xy(25,54)
                 self.cell(0,0,str(self.datos.Encabezado.Receptor.DirRecep+","+self.datos.Encabezado.Receptor.CmnaRecep))
-        
         except:
             try:
-                if str(self.datos.Encabezado.Receptor.DirRecep):
+                if str(self.datos.Encabezado.Receptor.DirRecep) :
                     self.cell(0,0,"Dirección :")
                     self.set_font("Arial","",9)
                     self.set_xy(25,54)
                     self.cell(0,0,str(self.datos.Encabezado.Receptor.DirRecep))
-                          
+
             except:
                 try:
-                    if str(self.datos.Encabezado.Receptor.CmnaRecep):
+                    if str(self.datos.Encabezado.Receptor.CmnaRecep) :
                         self.cell(0,0,"Dirección :")
                         self.set_font("Arial","",9)
                         self.set_xy(25,54)
                         self.cell(0,0,str(self.datos.Encabezado.Receptor.CmnaRecep))
                 except:
                     pass
-
         try:
             if str(self.datos.Encabezado.Receptor.Contacto):
                 self.set_font("Arial","B",9)
@@ -394,6 +418,7 @@ class BoletaPdf(Pdf):
                 self.cell(0,0,str(self.datos.Encabezado.Receptor.Contacto))
         except:
             pass
+
     def agregarExtraInfo(self) :
         self.set_font("Arial","B",9)
         self.set_xy(145,45)
@@ -462,6 +487,7 @@ class BoletaPdf(Pdf):
             self.line(211,self.get_y(),211,self.get_y()+altura)
             self.ln(altura)
         self.line(5,self.get_y(),211,self.get_y())
+
     def agregarObservacion(self) :
         self.ln(90) #Hago un salto de línea después de la creación de la tabla dinámica, de distancia igual a la altura del timbre + la observación,con la intención de que si se crea una nueva página, la firma y la observación van a quedar fijos en la parte inferior, al igual como si no se creara una nueva página
         try:
@@ -482,7 +508,7 @@ class BoletaPdf(Pdf):
         self.image(archivo_ted,20,200,68,36)
         self.set_xy(15,237)
         self.set_font("Arial","B",9)
-        self.multi_cell(w=75, h=5,txt="Timbre Electrónico SII \n Resolución 80 de 2014 \n Verifique documento: https://libredte.cl/boletas",border = 0, align= 'C', fill= False)
+        self.multi_cell(w=75, h=5,txt="Timbre Electrónico SII \n Resolución "+self.getResolucion()+" \n Verifique documento en "+self.webVerificacion, border = 0, align= 'C', fill= False)
         os.remove(archivo_ted)
 
     def agregarTotales(self) :
