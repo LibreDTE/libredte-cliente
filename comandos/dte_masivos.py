@@ -218,7 +218,7 @@ def agregarItem(documento, item) :
     if item[5] != '' :
         detalle["UnmdItem"] = item[5]
     if item[7] != '' :
-        if "," in item[7] :
+        if "," in item[7] or "." in item[7] :
             detalle["DescuentoPct"] = int(float(item[7].replace(",","."))*100)
         else :
             detalle["DescuentoMonto"] = int(item[7])
