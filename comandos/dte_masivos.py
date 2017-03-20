@@ -146,10 +146,10 @@ def crearDocumento(datos) :
     if datos[4] == '' :
         print("Falta RUT del receptor")
         return None
-    if datos[5] == '' :
-        print("Falta razón social del receptor")
-        return None
     if int(datos[0]) not in [39, 41] :
+        if datos[5] == '' :
+            print("Falta razón social del receptor")
+            return None
         if datos[6] == '' :
             print("Falta giro del receptor")
             return None
