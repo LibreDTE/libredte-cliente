@@ -226,3 +226,18 @@ Enviar todos los archivos XML de un directorio al servidor de LibreDTE:
 .. code:: shell
 
     $ libredte-cliente.py dte_sincronizar --hash=1234 --dir=/ruta/a/xmls -vv
+
+dte_masivos
+~~~~~~~~~~~
+
+Permite generar masivamente los DTE a partir de un archivo CSV.
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_masivos --emisor=76192083-9 --dir=masivos --csv=emision_masiva.csv
+
+El hash y la URL deben ser configuradas en el archivo config.yml
+
+El comando creará en el directorio especificado una carpeta por cada DTE a generar, los archivos
+de la carpeta serán los mismos del comando dte_generar más un archivo solicitud.json que contiene
+el JSON del DTE creado a partir de los datos del CSV.
