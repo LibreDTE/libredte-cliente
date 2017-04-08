@@ -56,6 +56,7 @@ def main(Cliente, args, config) :
         return 1
     dte_ok = 0
     dte_fail = 0
+    cmd_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     for documento in documentos :
         documento_id = "T"+str(documento["Encabezado"]["IdDoc"]["TipoDTE"])+"F"+str(documento["Encabezado"]["IdDoc"]["Folio"])
         print("Procesando el DTE "+documento_id+"... ", end="")
@@ -69,10 +70,12 @@ def main(Cliente, args, config) :
             cmd = "python3"
         elif os.name == 'nt' :
             cmd = "python.exe"
-        cmd += " libredte-cliente.py dte_generar"
+        cmd += " "+cmd_dir+"/libredte-cliente.py dte_generar"
         cmd += " --url="+config["auth"]["url"]+" --hash="+config["auth"]["hash"]
         cmd += " --json="+dir+"/"+documento_id+"/solicitud.json"
         cmd += " --dir="+dir+"/"+documento_id
+        """
+        # Sólo en python 3.5 o superior
         result = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
         if result.returncode == 0 :
             print("[Ok]")
@@ -81,6 +84,16 @@ def main(Cliente, args, config) :
             print("[Mal]")
             with open(dir+"/"+documento_id+'/dte_generar.log', 'w') as f :
                 f.write(result.stdout.decode('utf-8'))
+            dte_fail += 1
+        """
+        try :
+            subprocess.check_output(cmd.split(" "))
+            print("[Ok]")
+            dte_ok += 1
+        except subprocess.CalledProcessError as e :
+            print("[Mal]")
+            with open(dir+"/"+documento_id+'/dte_generar.log', 'w') as f :
+                f.write(e.output.decode('utf-8'))
             dte_fail += 1
     print("\nSe procesaron "+str(dte_ok+dte_fail)+" documentos:")
     if dte_ok :
