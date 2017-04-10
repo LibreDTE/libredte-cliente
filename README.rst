@@ -22,8 +22,8 @@ de la licencia AGPL.
 Requerimientos
 --------------
 
-Para poder ejecutar el cliente es necesario tener instalado Python 3 y el SDK
-de LibreDTE para Python:
+Para poder ejecutar el cliente es necesario tener instalado Python 3
+(versión 3.4 o superior) y el SDK de LibreDTE para Python:
 
 La instalación de Python 3 depende del sistema operativo, y en el caso de
 GNU/Linux es probable que ya venga incluído.
