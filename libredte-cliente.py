@@ -23,7 +23,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Cliente LibreDTE para integración con servicios web desde línea de comandos
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-02-02
+@version 2017-04-10
 """
 
 # módulos que se usarán
@@ -32,6 +32,9 @@ import getopt
 import os
 import yaml
 from libredte.sdk import LibreDTE
+
+# agregar al path el directorio actual para poder incluir módulos (como lib)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # función con modo de uso
 def usage(error = False, exit = 0) :
