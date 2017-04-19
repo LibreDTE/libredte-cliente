@@ -7,7 +7,7 @@
 # visualizar el parámetro --hash en la lista de procesos en ejecución.
 #
 # Para usar archivo de configuración copiar este archivo a config.yml y
-# dejar con permisos 0600 (usuarios en Linux)
+# (usuarios en GNU/Linux) dejar con permisos 0600
 #
 
 # configuración para autenticación en LibreDTE
