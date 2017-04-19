@@ -138,7 +138,7 @@ Generar DTE a partir de entrada en otros formatos, ejemplo YAML:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_generar --archivo=dte.yml --formato=yaml --dir=resultado
+    $ libredte-cliente.py dte_generar --archivo=dte.yml --formato=YAML --dir=resultado
 
 dte_estado
 ~~~~~~~~~~
