@@ -199,11 +199,11 @@ imprimir
 
 Permite imprimir un archivo PDF directamente en la impresora.
 
-En GNU/Linux se deberá instalar los paquetes de desarrollo de CUPS y pycups:
+En GNU/Linux se deberá instalar el paquete de desarrollo de CUPS y pycups:
 
 .. code:: shell
 
-    # apt-get install libredte-cliente.py
+    # apt-get install libcups2-dev
     # pip3 install pycups
 
 En Microsoft Windows se deberá instalar el paquete `pywin32 <https://sourceforge.net/projects/pywin32/files/pywin32>`_.
