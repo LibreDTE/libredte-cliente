@@ -206,6 +206,8 @@ En GNU/Linux se deberá instalar los paquetes de desarrollo de CUPS y pycups:
     # apt-get install libredte-cliente.py
     # pip3 install pycups
 
+En Microsoft Windows se deberá instalar el paquete `pywin32 <https://sourceforge.net/projects/pywin32/files/pywin32>`_.
+
 Imprimir en la impresora por defecto:
 
 .. code:: shell
