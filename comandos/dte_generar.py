@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para generar un DTE a partir de los datos de JSON o un XML
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2016-06-25
+@version 2017-08-07
 """
 
 # módulos usados
@@ -33,11 +33,11 @@ from json import loads as json_decode
 import codecs
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML']
+long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML', 'email']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML = parseArgs(args)
+    json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email = parseArgs(args)
     data = None
     if json :
         data = loadJSON(json)
@@ -68,7 +68,7 @@ def main(Cliente, args, config) :
         print('Error al recibir JSON DTE temporal, se recibió: '+emitir.text)
         return 1
     # crear DTE real
-    generar = Cliente.post('/dte/documentos/generar?getXML='+str(getXML), emitir.json())
+    generar = Cliente.post('/dte/documentos/generar?getXML='+str(getXML)+'&email='+str(email), emitir.json())
     if generar.status_code!=200 :
         print('Error al generar DTE real: '+json_encode(generar.json()))
         return generar.status_code
@@ -116,6 +116,7 @@ def parseArgs(args) :
     dir = ''
     normalizar = 1
     getXML = 0
+    email = 0
     for var, val in args:
         if var == '--json' :
             json = val
@@ -137,7 +138,9 @@ def parseArgs(args) :
             normalizar = val
         elif var == '--getXML' :
             getXML = 1
-    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML
+        elif var == '--email' :
+            email = 1
+    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email
 
 # función que carga un JSON
 def loadJSON (archivo) :

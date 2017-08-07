@@ -141,6 +141,12 @@ Generar DTE a partir de entrada en otros formatos, ejemplo YAML:
 
     $ libredte-cliente.py dte_generar --hash=1234 --archivo=dte.yml --formato=yaml --dir=resultado
 
+Generar DTE a partir de entrada en JSON y enviar automáticamente por correo:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_generar --hash=1234 --json=dte.json --dir=resultado --email
+
 dte_estado
 ~~~~~~~~~~
 
@@ -241,3 +247,9 @@ El hash y la URL deben ser configuradas en el archivo config.yml
 El comando creará en el directorio especificado una carpeta por cada DTE a generar, los archivos
 de la carpeta serán los mismos del comando dte_generar más un archivo solicitud.json que contiene
 el JSON del DTE creado a partir de los datos del CSV.
+
+El comando permite enviar directamente los DTE por correo, para esto ejecutar el comando así:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_masivos --emisor=76192083-9 --dir=masivos --csv=emision_masiva.csv --email
