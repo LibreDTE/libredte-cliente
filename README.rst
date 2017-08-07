@@ -96,8 +96,7 @@ interactuar.
 El HASH del usuario se obtiene de la página del
 `perfil del usuario <https://libredte.cl/usuarios/perfil>`_.
 
-En caso de estar usando un servidor que no sea el oficial, utilizar la opción
-``--url=`` para indicar la dirección del servidor al que se quiere conectar.
+Configurar los datos para autenticación en el archivo de configuración config.yml
 
 Comandos disponibles
 --------------------
@@ -121,25 +120,25 @@ Generar DTE a partir de entrada en JSON:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_generar --hash=1234 --json=dte.json --dir=resultado
+    $ libredte-cliente.py dte_generar --json=dte.json --dir=resultado
 
 Generar DTE a partir de entrada en XML:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_generar --hash=1234 --xml=dte.xml --dir=resultado
+    $ libredte-cliente.py dte_generar --xml=dte.xml --dir=resultado
 
 Generar DTE a partir de entrada en XML sin normalizar (el XML trae todos los datos):
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_generar --hash=1234 --xml=dte.xml --dir=resultado --normalizar=0
+    $ libredte-cliente.py dte_generar --xml=dte.xml --dir=resultado --normalizar=0
 
 Generar DTE a partir de entrada en otros formatos, ejemplo YAML:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_generar --hash=1234 --archivo=dte.yml --formato=yaml --dir=resultado
+    $ libredte-cliente.py dte_generar --archivo=dte.yml --formato=YAML --dir=resultado
 
 Generar DTE a partir de entrada en JSON y enviar automáticamente por correo:
 
@@ -154,13 +153,13 @@ Actualizar el estado de un envío de DTE al SII usando el servicio web del SII:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_estado --hash=1234 --rut=76192083 --dte=33 --folio=1
+    $ libredte-cliente.py dte_estado --rut=76192083 --dte=33 --folio=1
 
 Actualizar el estado de un envío de DTE al SII usando el correo recibido desde el SII:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_estado --hash=1234 --rut=76192083 --dte=33 --folio=1 --metodo=email
+    $ libredte-cliente.py dte_estado --rut=76192083 --dte=33 --folio=1 --metodo=email
 
 dte_emitido_pdf
 ~~~~~~~~~~~~~~~
@@ -169,19 +168,19 @@ Descargar PDF y guardar en directorio donde se está llamando al comando con nom
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1
+    $ libredte-cliente.py dte_emitido_pdf --rut=76192083 --dte=33 --folio=1
 
 Descargar PDF y guardar en una ruta específica con un nombre de PDF personalizado:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf
+    $ libredte-cliente.py dte_emitido_pdf --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf
 
 Descargar PDF en papel contínuo y guardar en una ruta específica con un nombre de PDF personalizado:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_emitido_pdf --hash=1234 --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf --papel=80
+    $ libredte-cliente.py dte_emitido_pdf --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf --papel=80
 
 dte_crear_pdf
 ~~~~~~~~~~~~~
@@ -205,12 +204,14 @@ imprimir
 
 Permite imprimir un archivo PDF directamente en la impresora.
 
-En GNU/Linux se deberá instalar los paquetes de desarrollo de CUPS y pycups:
+En GNU/Linux se deberá instalar el paquete de desarrollo de CUPS y pycups:
 
 .. code:: shell
 
-    # apt-get install libredte-cliente.py
+    # apt-get install libcups2-dev
     # pip3 install pycups
+
+En Microsoft Windows se deberá instalar el paquete `pywin32 <https://sourceforge.net/projects/pywin32/files/pywin32>`_.
 
 Imprimir en la impresora por defecto:
 
@@ -231,7 +232,7 @@ Enviar todos los archivos XML de un directorio al servidor de LibreDTE:
 
 .. code:: shell
 
-    $ libredte-cliente.py dte_sincronizar --hash=1234 --dir=/ruta/a/xmls -vv
+    $ libredte-cliente.py dte_sincronizar --dir=/ruta/a/xmls -vv
 
 dte_masivos
 ~~~~~~~~~~~
@@ -241,8 +242,6 @@ Permite generar masivamente los DTE a partir de un archivo CSV.
 .. code:: shell
 
     $ libredte-cliente.py dte_masivos --emisor=76192083-9 --dir=masivos --csv=emision_masiva.csv
-
-El hash y la URL deben ser configuradas en el archivo config.yml
 
 El comando creará en el directorio especificado una carpeta por cada DTE a generar, los archivos
 de la carpeta serán los mismos del comando dte_generar más un archivo solicitud.json que contiene

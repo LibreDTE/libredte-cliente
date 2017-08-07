@@ -45,7 +45,7 @@ def usage(error = False, exit = 0) :
         print('[Error] '+error)
         print()
     print('Modo de uso:')
-    print('  $ '+os.path.basename(sys.argv[0])+' <COMANDO> --hash=<HASH USUARIO> <OPCIONES>')
+    print('  $ '+os.path.basename(sys.argv[0])+' <COMANDO> <OPCIONES>')
     print()
     if exit :
         sys.exit(exit)
@@ -72,7 +72,7 @@ try :
 except AttributeError :
     long_options = []
 
-# configuración predeterminada (no modificar acá, usar parámetros o archivo config.yml)
+# configuración predeterminada (no modificar acá, usar archivo config.yml)
 hash = '' # --hash=HASH_USUARIO
 url = 'https://libredte.cl' # --url=NUEVA_URL
 if os.path.isfile(dirname+"/config.yml") :
