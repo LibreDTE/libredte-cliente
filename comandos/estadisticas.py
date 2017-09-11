@@ -88,6 +88,8 @@ def statsContribuyentesActivos(datos, cantidad) :
     total = len(datos)
     # 1-4: promedio, desviación estándar, máximo y mínimo
     print('Total de empresas: '+str(total))
+    if total == 0 :
+        return False
     print('Máximo de documentos totales: '+str(maximoDocumentosTotales(datos)))
     print('Mínimo documentos totales: '+str(minimoDocumentosTotales(datos)))
     print('Promedio de documentos totales: '+str(round(promedioDocumentosTotales(datos))))
@@ -138,14 +140,16 @@ def csvContribuyentesActivos(datos, archivo, sep = ';') :
     print('Generando archivo '+archivo)
     archivo_csv=open(str(archivo),"w")
     archivo_csv=open(str(archivo),"a")
-    archivo_csv.write('rut'+sep+'razon social'+sep+'usuario'+sep+'grupos'+sep+'nombre'+sep+'emitidos'+sep+'recibidos'+sep+'total'+sep+'sobre la cuota'+"\n")
+    archivo_csv.write('rut'+sep+'razon social'+sep+'usuario'+sep+'grupos'+sep+'nombre'+sep+'email'+sep+'emitidos'+sep+'recibidos'+sep+'total'+sep+'sobre la cuota'+"\n")
     for linea in datos:
         archivo_csv.write(str(linea["rut"])+sep)
         archivo_csv.write(linea["razon_social"]+sep)
         archivo_csv.write(linea["usuario"]+sep)
-        grupos=" ".join(linea["grupos"])
+        grupos=" ".join(linea["grupos"]) if 'grupos' in linea else ''
         archivo_csv.write(grupos+sep)
         archivo_csv.write(linea["nombre"]+sep)
+        email=linea["email"] if 'email' in linea and linea["email"] else ''
+        archivo_csv.write (email+sep)
         emitidos=linea["emitidos"] if linea["emitidos"] else 0
         archivo_csv.write (str(emitidos)+sep)
         recibidos=linea["recibidos"] if linea["recibidos"] else 0
@@ -361,9 +365,10 @@ def usuariosConIgualMayorCantidadContribuyentes(datos, cantidad) :
 def usuariosEnGrupo(datos, grupo) :
     cantidad = 0
     for diccionario in datos:
-        for x in diccionario['grupos']:
-            if x == grupo:
-                cantidad += 1
+        if 'grupos' in diccionario :
+            for x in diccionario['grupos']:
+                if x == grupo:
+                    cantidad += 1
     return cantidad
 
 # Algoritmo Insertion Sort Mayor a Menor
