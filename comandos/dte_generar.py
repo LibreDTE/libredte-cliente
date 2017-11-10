@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para generar un DTE a partir de los datos de JSON o un XML
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-08-07
+@version 2017-11-10
 """
 
 # módulos usados
@@ -33,11 +33,11 @@ from json import loads as json_decode
 import codecs
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML', 'email']
+long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML', 'email', 'cotizacion']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email = parseArgs(args)
+    json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email, cotizacion = parseArgs(args)
     data = None
     if json :
         data = loadJSON(json)
@@ -57,7 +57,10 @@ def main(Cliente, args, config) :
     if not os.path.exists(dir):
         os.makedirs(dir)
     # crear DTE temporal
-    emitir = Cliente.post('/dte/documentos/emitir?normalizar='+str(normalizar)+'&formato='+formato, data)
+    emitir_url = '/dte/documentos/emitir?normalizar='+str(normalizar)+'&formato='+formato
+    if cotizacion == 1 and email == 1 :
+        emitir_url += '&email='+str(email)
+    emitir = Cliente.post(emitir_url, data)
     if emitir.status_code!=200 :
         print('Error al emitir DTE temporal: '+json_encode(emitir.json()))
         return emitir.status_code
@@ -67,41 +70,43 @@ def main(Cliente, args, config) :
     except ValueError :
         print('Error al recibir JSON DTE temporal, se recibió: '+emitir.text)
         return 1
-    # crear DTE real
-    generar = Cliente.post('/dte/documentos/generar?getXML='+str(getXML)+'&email='+str(email), emitir.json())
-    if generar.status_code!=200 :
-        print('Error al generar DTE real: '+json_encode(generar.json()))
-        return generar.status_code
-    try :
-        dte_emitido = generar.json()
-    except ValueError :
-        print('Error al recibir JSON DTE real, se recibió: '+generar.text)
-        return 1
-    xml_emitido = dte_emitido['xml']
-    dte_emitido['xml'] = None
-    with open(dir+'/emitido.json', 'w') as f:
-        f.write(json_encode(dte_emitido))
-    if getXML :
-        with codecs.open(dir+'/emitido.xml', 'w', 'iso-8859-1') as f:
-            f.write(b64decode(xml_emitido).decode('iso-8859-1'))
-    columnas = ['emisor', 'dte', 'folio', 'certificacion', 'tasa', 'fecha', 'sucursal_sii', 'receptor', 'exento', 'neto', 'iva', 'total', 'usuario', 'track_id']
-    valores = []
-    for col in columnas :
-        if dte_emitido[col] != None :
-            valores.append(str(dte_emitido[col]))
-        else :
-            valores.append('')
-    with open(dir+'/emitido.csv', 'w') as f:
-        f.write(';'.join(columnas)+"\n")
-        f.write(';'.join(valores)+"\n")
-    # obtener el PDF del DTE
-    generar_pdf = Cliente.get('/dte/dte_emitidos/pdf/'+str(generar.json()['dte'])+'/'+str(generar.json()['folio'])+'/'+str(generar.json()['emisor'])+'?cedible='+str(cedible)+'&papelContinuo='+str(papel))
-    if generar_pdf.status_code!=200 :
-        print('Error al generar PDF del DTE: '+json_encode(generar_pdf.json()))
-        return generar_pdf.status_code
-    # guardar PDF en el disco
-    with open(dir+'/emitido.pdf', 'wb') as f:
-        f.write(generar_pdf.content)
+    # crear DTE real sólo si no es cotización
+    if cotizacion == 0 :
+        generar = Cliente.post('/dte/documentos/generar?getXML='+str(getXML)+'&email='+str(email), emitir.json())
+        if generar.status_code!=200 :
+            print('Error al generar DTE real: '+json_encode(generar.json()))
+            return generar.status_code
+        try :
+            dte_emitido = generar.json()
+        except ValueError :
+            print('Error al recibir JSON DTE real, se recibió: '+generar.text)
+            return 1
+        xml_emitido = dte_emitido['xml']
+        dte_emitido['xml'] = None
+        with open(dir+'/emitido.json', 'w') as f:
+            f.write(json_encode(dte_emitido))
+        if getXML :
+            with codecs.open(dir+'/emitido.xml', 'w', 'iso-8859-1') as f:
+                f.write(b64decode(xml_emitido).decode('iso-8859-1'))
+        columnas = ['emisor', 'dte', 'folio', 'certificacion', 'tasa', 'fecha', 'sucursal_sii', 'receptor', 'exento', 'neto', 'iva', 'total', 'usuario', 'track_id']
+        valores = []
+        for col in columnas :
+            if dte_emitido[col] != None :
+                valores.append(str(dte_emitido[col]))
+            else :
+                valores.append('')
+        with open(dir+'/emitido.csv', 'w') as f:
+            f.write(';'.join(columnas)+"\n")
+            f.write(';'.join(valores)+"\n")
+        # obtener el PDF del DTE
+        generar_pdf = Cliente.get('/dte/dte_emitidos/pdf/'+str(generar.json()['dte'])+'/'+str(generar.json()['folio'])+'/'+str(generar.json()['emisor'])+'?cedible='+str(cedible)+'&papelContinuo='+str(papel))
+        if generar_pdf.status_code!=200 :
+            print('Error al generar PDF del DTE: '+json_encode(generar_pdf.json()))
+            return generar_pdf.status_code
+        # guardar PDF en el disco
+        with open(dir+'/emitido.pdf', 'wb') as f:
+            f.write(generar_pdf.content)
+    # todo ok
     return 0
 
 # función que procesa los argumentos del comando
@@ -117,6 +122,7 @@ def parseArgs(args) :
     normalizar = 1
     getXML = 0
     email = 0
+    cotizacion = 0
     for var, val in args:
         if var == '--json' :
             json = val
@@ -140,7 +146,9 @@ def parseArgs(args) :
             getXML = 1
         elif var == '--email' :
             email = 1
-    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email
+        elif var == '--cotizacion' :
+            cotizacion = 1
+    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email, cotizacion
 
 # función que carga un JSON
 def loadJSON (archivo) :

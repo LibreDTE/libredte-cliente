@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para generar un DTE a partir de los datos de JSON o un XML
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-08-07
+@version 2017-11-10
 """
 
 # módulos usados
@@ -33,11 +33,11 @@ import shutil
 import subprocess
 
 # opciones en formato largo
-long_options = ['emisor=', 'csv=', 'dir=', 'getXML', 'email']
+long_options = ['emisor=', 'csv=', 'dir=', 'getXML', 'email', 'cotizacion']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    emisor, csv, dir, getXML, email = parseArgs(args)
+    emisor, csv, dir, getXML, email, cotizacion = parseArgs(args)
     if emisor == None :
         print('Debe especificar el emisor que creará los documentos')
         return 1
@@ -76,6 +76,8 @@ def main(Cliente, args, config) :
         cmd += " --dir="+dir+"/"+documento_id
         if email :
             cmd += " --email"
+        if cotizacion == 1 :
+            cmd += " --cotizacion"
         """
         # Sólo funciona en python 3.5 o superior (y se quiere compatibilidad con 3.4 o superior)
         result = subprocess.run(cmd.split(" "), stdout=subprocess.PIPE)
@@ -111,6 +113,7 @@ def parseArgs(args) :
     dir = ''
     getXML = 0
     email = 0
+    cotizacion = 0
     for var, val in args:
         if var == '--emisor' :
             emisor = val
@@ -122,7 +125,9 @@ def parseArgs(args) :
             getXML = 1
         elif var == '--email' :
             email = 1
-    return emisor, csv, dir, getXML, email
+        elif var == '--cotizacion' :
+            cotizacion = 1
+    return emisor, csv, dir, getXML, email, cotizacion
 
 # función que entrega un arreglo con los diccionarios que representan los DTE
 # del CSV de documentos

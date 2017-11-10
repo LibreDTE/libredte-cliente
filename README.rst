@@ -38,7 +38,7 @@ GNU/Linux:
 
 .. code:: shell
 
-    $ sudo pip install libredte
+    $ sudo pip3 install libredte
 
 En Microsoft Windows:
 
@@ -252,3 +252,10 @@ El comando permite enviar directamente los DTE por correo, para esto ejecutar el
 .. code:: shell
 
     $ libredte-cliente.py dte_masivos --emisor=76192083-9 --dir=masivos --csv=emision_masiva.csv --email
+
+El comando permite generar sólo cotizaciones (documentos temporales) en vez de los reales, para esto
+ejecutar el comando así:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_masivos --emisor=76192083-9 --dir=masivos --csv=emision_masiva.csv --cotizacion

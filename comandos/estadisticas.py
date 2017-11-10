@@ -127,7 +127,7 @@ def statsContribuyentesActivos(datos, cantidad) :
     print()
     # 10: empresas que pertenecen a ciertos grupos
     print('Empresas que pertenecen a los siguientes grupos:')
-    grupos = ['dte_plus', 'lce_plus', 'rrhh_plus', 'inventario_plus']
+    grupos = ['dte_plus', 'lce_plus', 'rrhh_plus', 'inventario_plus', 'crm_plus', 'proveedores_plus']
     for g in grupos :
         n = usuariosEnGrupo(datos, g)
         print('  - '+g+': '+str(n)+' de '+str(total)+' ('+str(round((n/total)*100,2))+'%)')
