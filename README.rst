@@ -259,3 +259,29 @@ ejecutar el comando así:
 .. code:: shell
 
     $ libredte-cliente.py dte_masivos --emisor=76192083-9 --dir=masivos --csv=emision_masiva.csv --cotizacion
+
+monitor
+~~~~~~~
+
+Permite monitorear un directorio e ir creando automáticamente los DTE a medida que se van dejando
+los archivos con las solicitudes de DTE (ya sea en JSON, XML, YAML u otro formato soportado).
+
+.. code:: shell
+
+    $ libredte-cliente.py monitor --emisor=76192083-9 --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida
+
+El formato por defecto de los archivos debe ser JSON, si se quiere usar otro, por ejemplo XML,
+ejecutar con el nombre del formato (misma opción que comando dte_generar):
+
+.. code:: shell
+
+    $ libredte-cliente.py monitor --emisor=76192083-9 --formato=xml --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida
+
+Si el receptor tiene correo asociado se puede enviar automáticamente el DTE por correo, ejecutar así:
+
+.. code:: shell
+
+    $ libredte-cliente.py monitor --emisor=76192083-9 --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida --email
+
+El monitor se ejecutará infinitamente y cada 1 segundo revisará el directorio para comprobar si
+debe generar algún DTE.
