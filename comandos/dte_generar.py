@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para generar un DTE a partir de los datos de JSON o un XML
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-11-10
+@version 2017-12-29
 """
 
 # módulos usados
@@ -31,22 +31,23 @@ import os
 from json import dumps as json_encode
 from json import loads as json_decode
 import codecs
+import sys
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML', 'email', 'cotizacion']
+long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'encoding=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML', 'email', 'cotizacion']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email, cotizacion = parseArgs(args)
+    json, xml, archivo, formato, encoding, cedible, papel, web, dir, normalizar, getXML, email, cotizacion = parseArgs(args)
     data = None
     if json :
-        data = loadJSON(json)
+        data = loadJSON(json, encoding)
         formato = 'json'
     if xml :
-        data = loadXML(xml)
+        data = loadXML(xml, encoding)
         formato = 'xml'
     if archivo != None and formato != None and formato not in ('json', 'xml') :
-        data = '"'+b64encode(bytes(loadFile(archivo), 'UTF8')).decode('UTF8')+'"'
+        data = '"'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'"'
     if data == None :
         print('Debe especificar un archivo JSON o bien un archivo XML a enviar')
         return 1
@@ -115,6 +116,7 @@ def parseArgs(args) :
     xml = ''
     archivo = None
     formato = None
+    encoding = 'UTF-8'
     cedible = 1
     papel = 0
     web = False
@@ -132,6 +134,8 @@ def parseArgs(args) :
             archivo = val
         elif var == '--formato' :
             formato = val
+        elif var == '--encoding' :
+            encoding = val
         elif var == '--cedible' :
             cedible = val
         elif var == '--papel' :
@@ -148,18 +152,30 @@ def parseArgs(args) :
             email = 1
         elif var == '--cotizacion' :
             cotizacion = 1
-    return json, xml, archivo, formato, cedible, papel, web, dir, normalizar, getXML, email, cotizacion
+    return json, xml, archivo, formato, encoding, cedible, papel, web, dir, normalizar, getXML, email, cotizacion
 
 # función que carga un JSON
-def loadJSON (archivo) :
-    return json_decode(loadFile(archivo))
+def loadJSON (archivo, encoding) :
+    return json_decode(loadFile(archivo, encoding))
 
 # función que carga un XML
-def loadXML (archivo) :
-    return '"'+b64encode(bytes(loadFile(archivo), 'UTF8')).decode('UTF8')+'"'
+def loadXML (archivo, encoding) :
+    return '"'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'"'
 
 # función que carga un archivo
-def loadFile (archivo) :
-    with open(archivo, 'r') as content_file:
-        content = content_file.read()
-    return content
+def loadFile (archivo, encoding) :
+    if encoding == 'UTF-8' :
+        try :
+            with open(archivo, 'r') as content_file:
+                content = content_file.read()
+            return content
+        except UnicodeDecodeError :
+            print('No fue posible leer el archivo por codificación ¿asignar --encoding?')
+            sys.exit(1)
+    else :
+        content = ''
+        fd = codecs.open(archivo, 'r', encoding)
+        for line in fd :
+            content += line
+        fd.close()
+        return content

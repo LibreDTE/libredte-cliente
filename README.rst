@@ -146,6 +146,13 @@ Generar DTE a partir de entrada en JSON y enviar automáticamente por correo:
 
     $ libredte-cliente.py dte_generar --hash=1234 --json=dte.json --dir=resultado --email
 
+Es posible especificar la codificación del archivo que se leerá, y que sea transformado
+automáticamente a UTF-8 por el cliente antes de enviar al servicio web de LibreDTE:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_generar --json=dte.json --dir=resultado --encoding=ISO-8859-1
+
 dte_estado
 ~~~~~~~~~~
 
@@ -282,6 +289,14 @@ Si el receptor tiene correo asociado se puede enviar automáticamente el DTE por
 .. code:: shell
 
     $ libredte-cliente.py monitor --emisor=76192083-9 --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida --email
+
+Es posible especificar la codificación de los archivos que se leerán en el directorio que
+se estará monitoreando. Con esto, cada archivo será transformado automáticamente a UTF-8
+por el cliente antes de enviar al servicio web de LibreDTE:
+
+.. code:: shell
+
+    $ libredte-cliente.py monitor --emisor=76192083-9 --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida --encoding=ISO-8859-1
 
 El monitor se ejecutará infinitamente y cada 1 segundo revisará el directorio para comprobar si
 debe generar algún DTE.
