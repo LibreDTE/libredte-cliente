@@ -23,7 +23,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 Comando para monitorear un directorio por archivos con cierto formato e ir creando
 los DTE asociados y sus PDF
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-12-29
+@version 2018-01-19
 """
 
 # módulos usados
@@ -34,11 +34,11 @@ import subprocess
 from json import dumps as json_encode
 
 # opciones en formato largo
-long_options = ['emisor=', 'formato=', 'encoding=', 'dir_entrada=', 'dir_salida=', 'email']
+long_options = ['emisor=', 'formato=', 'encoding=', 'dir_entrada=', 'dir_salida=', 'normalizar=', 'email']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    emisor, formato, encoding, dir_entrada, dir_salida, email = parseArgs(args)
+    emisor, formato, encoding, dir_entrada, dir_salida, normalizar, email = parseArgs(args)
     if emisor == None :
         print('Debe especificar el emisor que creará los documentos')
         return 1
@@ -82,6 +82,7 @@ def main(Cliente, args, config) :
                         cmd += " --archivo="+archivo_solicitud+" --formato="+formato
                     cmd += " --encoding="+encoding
                     cmd += " --dir="+dir_dte
+                    cmd += " --normalizar="+str(normalizar)
                     if email :
                         cmd += " --email"
                     try :
@@ -103,6 +104,7 @@ def parseArgs(args) :
     encoding = 'UTF-8'
     dir_entrada = ''
     dir_salida = ''
+    normalizar = 1
     email = 0
     for var, val in args:
         if var == '--emisor' :
@@ -115,6 +117,8 @@ def parseArgs(args) :
             dir_entrada = val
         elif var == '--dir_salida' :
             dir_salida = val
+        elif var == '--normalizar' :
+            normalizar = val
         elif var == '--email' :
             email = 1
-    return emisor, formato, encoding, dir_entrada, dir_salida, email
+    return emisor, formato, encoding, dir_entrada, dir_salida, normalizar, email
