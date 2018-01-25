@@ -107,6 +107,14 @@ def main(Cliente, args, config) :
         # guardar PDF en el disco
         with open(dir+'/emitido.pdf', 'wb') as f:
             f.write(generar_pdf.content)
+    # si es cotización bajar el PDF
+    else :
+        cotizacion_pdf = Cliente.get('/dte/dte_tmps/pdf/'+str(emitir.json()['receptor'])+'/'+str(emitir.json()['dte'])+'/'+str(emitir.json()['codigo'])+'/'+str(emitir.json()['emisor'])+'&cotizacion=1&papelContinuo='+str(papel))
+        if cotizacion_pdf.status_code!=200 :
+            print('Error al generar PDF de la cotización: '+json_encode(cotizacion_pdf.json()))
+            return cotizacion_pdf.status_code
+        with open(dir+'/cotizacion.pdf', 'wb') as f:
+            f.write(cotizacion_pdf.content)
     # todo ok
     return 0
 
