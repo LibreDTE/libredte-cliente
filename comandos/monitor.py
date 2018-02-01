@@ -126,4 +126,4 @@ def parseArgs(args) :
             papel = val
         elif var == '--email' :
             email = 1
-    return emisor, formato, encoding, dir_entrada, dir_salida, normalizar, email
+    return emisor, formato, encoding, dir_entrada, dir_salida, normalizar, papel, email
