@@ -34,11 +34,11 @@ import subprocess
 from json import dumps as json_encode
 
 # opciones en formato largo
-long_options = ['emisor=', 'formato=', 'encoding=', 'dir_entrada=', 'dir_salida=', 'normalizar=', 'email']
+long_options = ['emisor=', 'formato=', 'encoding=', 'dir_entrada=', 'dir_salida=', 'normalizar=', 'papel=', 'email']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    emisor, formato, encoding, dir_entrada, dir_salida, normalizar, email = parseArgs(args)
+    emisor, formato, encoding, dir_entrada, dir_salida, normalizar, papel, email = parseArgs(args)
     if emisor == None :
         print('Debe especificar el emisor que creará los documentos')
         return 1
@@ -83,6 +83,8 @@ def main(Cliente, args, config) :
                     cmd += " --encoding="+encoding
                     cmd += " --dir="+dir_dte
                     cmd += " --normalizar="+str(normalizar)
+                    if papel :
+                        cmd += " --papel="+str(papel)
                     if email :
                         cmd += " --email"
                     try :
@@ -105,6 +107,7 @@ def parseArgs(args) :
     dir_entrada = ''
     dir_salida = ''
     normalizar = 1
+    papel = 0
     email = 0
     for var, val in args:
         if var == '--emisor' :
@@ -119,6 +122,8 @@ def parseArgs(args) :
             dir_salida = val
         elif var == '--normalizar' :
             normalizar = val
+        elif var == '--papel' :
+            papel = val
         elif var == '--email' :
             email = 1
     return emisor, formato, encoding, dir_entrada, dir_salida, normalizar, email
