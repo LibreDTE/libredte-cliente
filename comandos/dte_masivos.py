@@ -213,6 +213,10 @@ def crearDocumento(datos) :
         documento["Encabezado"]["Receptor"]["CmnaRecep"] = datos[10]
     if datos[19] != '' :
         documento["Encabezado"]["IdDoc"]["TermPagoGlosa"] = datos[19]
+    if datos[20] != '' :
+        documento["Encabezado"]["IdDoc"]["PeriodoDesde"] = datos[20]
+    if datos[21] != '' :
+        documento["Encabezado"]["IdDoc"]["PeriodoHasta"] = datos[21]
     return agregarItem(documento, datos[11:19])
 
 # funcion que agrega el item al DTE
