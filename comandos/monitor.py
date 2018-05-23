@@ -68,7 +68,12 @@ def main(Cliente, args, config) :
                         shutil.rmtree(dir_dte)
                     os.makedirs(dir_dte)
                     archivo_solicitud = dir_dte+'/solicitud_'+f.name
-                    os.rename(f.path, archivo_solicitud)
+                    while True :
+                        try :
+                            os.rename(f.path, archivo_solicitud)
+                            break
+                        except PermissionError :
+                            time.sleep(1)
                     # generar DTE
                     if os.name == 'posix':
                         cmd = "python3"
