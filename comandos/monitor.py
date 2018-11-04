@@ -117,9 +117,9 @@ def parseArgs(args) :
     for var, val in args:
         if var == '--emisor' :
             emisor = val
-        if var == '--formato' :
+        elif var == '--formato' :
             formato = val
-        if var == '--encoding' :
+        elif var == '--encoding' :
             encoding = val
         elif var == '--dir_entrada' :
             dir_entrada = val
