@@ -111,10 +111,10 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
             if printer_type == 'network' :
                 try :
                     print_network(printer_host, printer_port, datos)
-                except ConnectionRefusedError:
+                except (ConnectionRefusedError, OSError) as e:
                     yield from websocket.send(json.dumps({
                         'status': 1,
-                        'message': 'No fue posible imprimir en ' + printer_host + ':' + str(printer_port)
+                        'message': 'No fue posible imprimir en ' + printer_host + ':' + str(printer_port) + ' (' + str(e) + ')'
                     }))
                     return 1
             else :
@@ -128,10 +128,10 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
             if printer_type == 'network' :
                 try :
                     print_network(printer_host, printer_port, datos)
-                except ConnectionRefusedError:
+                except (ConnectionRefusedError, OSError) as e:
                     yield from websocket.send(json.dumps({
                         'status': 1,
-                        'message': 'No fue posible imprimir en ' + printer_host + ':' + str(printer_port)
+                        'message': 'No fue posible imprimir en ' + printer_host + ':' + str(printer_port) + ' (' + str(e) + ')'
                     }))
                     return 1
             elif printer_type == 'system' :
@@ -158,7 +158,7 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
                 except subprocess.CalledProcessError as e :
                     yield from websocket.send(json.dumps({
                         'status': 1,
-                        'message': 'No fue posible imprimir en la impresora local: ' + e.output.decode('utf-8')
+                        'message': 'No fue posible imprimir en la impresora local (' + str(e) + ')'
                     }))
                     return 1
                 # quitar archivo temporal del PDF
