@@ -300,3 +300,22 @@ por el cliente antes de enviar al servicio web de LibreDTE:
 
 El monitor se ejecutará infinitamente y cada 1 segundo revisará el directorio para comprobar si
 debe generar algún DTE.
+
+websocketd
+~~~~~~~~~~
+
+Permite crear un servidor de websockets para que la aplicación web de LibreDTE
+se comunique con el computador local. Esto permite, por ejemplo, imprimir
+directamente desde la aplicación web un DTE sin tener que bajar o abrir un PDF.
+
+Imprimir en la impresora que el computador tenga configurada por defecto (sólo PDF):
+
+.. code:: shell
+
+    $ libredte-cliente websocketd --printer_type=system
+
+Imprimir en una impresora en red (PDF o usando ESCPOS para impresoras térmicas):
+
+.. code:: shell
+
+    $ libredte-cliente websocketd --printer_host=172.16.1.219
