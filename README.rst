@@ -312,10 +312,10 @@ Imprimir en la impresora que el computador tenga configurada por defecto (sólo 
 
 .. code:: shell
 
-    $ libredte-cliente websocketd --printer_type=system
+    $ libredte-cliente.py websocketd --printer_type=system
 
 Imprimir en una impresora en red (PDF o usando ESCPOS para impresoras térmicas):
 
 .. code:: shell
 
-    $ libredte-cliente websocketd --printer_host=172.16.1.219
+    $ libredte-cliente.py websocketd --printer_host=172.16.1.219
