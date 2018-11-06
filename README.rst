@@ -46,6 +46,14 @@ En Microsoft Windows:
 
     > pip.exe install libredte
 
+Si desea usar el servidor de WebSockets deberá instalar:
+
+.. code:: shell
+
+    $ sudo pip3 install websockets
+
+(o el equivalente en Microsoft Windows)
+
 Instalación
 -----------
 
