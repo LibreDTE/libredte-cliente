@@ -104,8 +104,15 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
         except IndexError:
             formato = 'escpos'
         # obtener datos del archivo para impresión
-        z = zipfile.ZipFile(io.BytesIO(message))
-        datos = z.read(z.infolist()[0])
+        try :
+            z = zipfile.ZipFile(io.BytesIO(message))
+            datos = z.read(z.infolist()[0])
+        except zipfile.BadZipFile as e:
+            yield from websocket.send(json.dumps({
+                'status': 1,
+                'message': 'No fue posible obtener el archivo para imprimir (' + str(e) + ')'
+            }))
+            return 1
         # opciones para impresión con ESCPOS
         if formato == 'escpos' :
             if printer_type == 'network' :
