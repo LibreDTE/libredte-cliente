@@ -45,18 +45,18 @@ from datetime import datetime
 import subprocess
 
 # opciones en formato largo
-long_options = ['printer_type=', 'printer_host=', 'printer_port=']
+long_options = ['printer_type=', 'printer_uri=']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    printer_type, printer_host, printer_port = parseArgs(args)
+    printer_type, printer_uri = parseArgs(args)
+    log("Iniciando LibreDTE websocketd")
     try :
         server = websockets.serve(
             functools.partial(
                 on_message,
                 printer_type = printer_type,
-                printer_host = printer_host,
-                printer_port = printer_port
+                printer_uri = printer_uri,
             ),
             'localhost',
             2186
@@ -71,21 +71,18 @@ def main(Cliente, args, config) :
 # función que procesa los argumentos del comando
 def parseArgs(args) :
     printer_type = 'network'
-    printer_host = '127.0.0.1'
-    printer_port = 9100
+    printer_uri = '127.0.0.1:9100'
     for var, val in args:
         if var == '--printer_type' :
             printer_type = val
-        elif var == '--printer_host' :
-            printer_host = val
-        elif var == '--printer_port' :
-            printer_port = val
-    return printer_type, printer_host, printer_port
+        elif var == '--printer_uri' :
+            printer_uri = val
+    return printer_type, printer_uri
 
 
 # función que se ejecuta cuando el websocket recibe un mensaje
 @asyncio.coroutine
-def on_message(websocket, path, printer_type, printer_host, printer_port):
+def on_message(websocket, path, printer_type, printer_uri):
     # verificar las partes pasadas al script
     # al menos se debe pasar una acción que es la que se está realizando
     parts = path.split('/')
@@ -117,11 +114,11 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
         if formato == 'escpos' :
             if printer_type == 'network' :
                 try :
-                    print_network(printer_host, printer_port, datos)
+                    print_network(printer_uri, datos)
                 except (ConnectionRefusedError, OSError) as e:
                     yield from websocket.send(json.dumps({
                         'status': 1,
-                        'message': 'No fue posible imprimir en ' + printer_host + ':' + str(printer_port) + ' (' + str(e) + ')'
+                        'message': 'No fue posible imprimir en ' + printer_uri + ' (' + str(e) + ')'
                     }))
                     return 1
             else :
@@ -134,11 +131,11 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
         elif formato == 'pdf' :
             if printer_type == 'network' :
                 try :
-                    print_network(printer_host, printer_port, datos)
+                    print_network(printer_uri, datos)
                 except (ConnectionRefusedError, OSError) as e:
                     yield from websocket.send(json.dumps({
                         'status': 1,
-                        'message': 'No fue posible imprimir en ' + printer_host + ':' + str(printer_port) + ' (' + str(e) + ')'
+                        'message': 'No fue posible imprimir en ' + printer_uri + ' (' + str(e) + ')'
                     }))
                     return 1
             elif printer_type == 'system' :
@@ -182,13 +179,25 @@ def on_message(websocket, path, printer_type, printer_host, printer_port):
                 'message': 'Formato ' + formato + ' no soportado'
             }))
             return 1
+        # log impresión
+        log("Se imprimió usando '" + formato + "' en la impresora '" + printer_type + "'")
     # todo ok
     return 0
 
 # función que realiza la impresión en una impresora de red
-def print_network(host, port, data) :
+def print_network(uri, data) :
+    if uri.find(':') > 0 :
+        host, port = uri.split(':')
+    else :        
+        host = uri
+        port = 9100
     printer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     printer_socket.connect((host, port))
     printer_socket.send(data)
     printer_socket.shutdown(0)
     printer_socket.close()
+
+# función para log en el servidor de websockets
+def log(msg) :
+    dt = datetime.now()
+    print(str(dt).split(".")[0] + ": " + msg)

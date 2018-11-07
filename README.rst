@@ -326,4 +326,4 @@ Imprimir en una impresora en red (PDF o usando ESCPOS para impresoras térmicas)
 
 .. code:: shell
 
-    $ libredte-cliente.py websocketd --printer_host=172.16.1.219
+    $ libredte-cliente.py websocketd --printer_uri=172.16.1.219
