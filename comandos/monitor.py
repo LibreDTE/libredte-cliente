@@ -34,11 +34,11 @@ import subprocess
 from json import dumps as json_encode
 
 # opciones en formato largo
-long_options = ['emisor=', 'formato=', 'encoding=', 'dir_entrada=', 'dir_salida=', 'normalizar=', 'papel=', 'email']
+long_options = ['emisor=', 'formato=', 'encoding=', 'dir_entrada=', 'dir_salida=', 'normalizar=', 'papel=', 'email', 'imprimir']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    emisor, formato, encoding, dir_entrada, dir_salida, normalizar, papel, email = parseArgs(args)
+    emisor, formato, encoding, dir_entrada, dir_salida, normalizar, papel, email, imprimir = parseArgs(args)
     if emisor == None :
         print('Debe especificar el emisor que creará los documentos')
         return 1
@@ -53,6 +53,12 @@ def main(Cliente, args, config) :
         os.makedirs(dir_salida)
     # directorio del comando principal
     cmd_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    # comando de python según OS
+    if os.name == 'posix':
+        libredte_exec = "python3"
+    elif os.name == 'nt' :
+        libredte_exec = "python.exe"
+    libredte_exec += " "+cmd_dir+"/libredte-cliente.py"
     # lanzar monitor en el directorio
     print('Iniciando monitor en el directorio:', dir_entrada)
     print('Para finalizar el monitoreo utilizar Ctrl+C')
@@ -75,12 +81,7 @@ def main(Cliente, args, config) :
                         except PermissionError :
                             time.sleep(1)
                     # generar DTE
-                    if os.name == 'posix':
-                        cmd = "python3"
-                    elif os.name == 'nt' :
-                        cmd = "python.exe"
-                    cmd += " "+cmd_dir+"/libredte-cliente.py dte_generar"
-                    cmd += " --url="+config["auth"]["url"]+" --hash="+config["auth"]["hash"]
+                    cmd = libredte_exec+" dte_generar --url="+config["auth"]["url"]+" --hash="+config["auth"]["hash"]
                     if formato in ('json', 'xml') :
                         cmd += " --"+formato+"="+archivo_solicitud
                     else :
@@ -99,6 +100,16 @@ def main(Cliente, args, config) :
                         print("[Mal]")
                         with open(dir_dte+'/dte_generar.log', 'w') as f :
                             f.write(e.output.decode('utf-8'))
+                    # imprimir el DTE
+                    if imprimir :
+                        cmd = libredte_exec+" imprimir --pdf="+dir_dte+"/emitido.pdf"
+                        try :
+                            subprocess.check_output(cmd.split(" "))
+                            print("  Se ha enviado a imprimir el DTE")
+                        except subprocess.CalledProcessError as e :
+                            print("No fue posible enviar a imprimir el DTE")
+                            with open(dir_dte+'/dte_generar.log', 'w') as f :
+                                f.write(e.output.decode('utf-8'))
             time.sleep(1)
     except KeyboardInterrupt :
         print()
@@ -114,6 +125,7 @@ def parseArgs(args) :
     normalizar = 1
     papel = 0
     email = 0
+    imprimir = 0
     for var, val in args:
         if var == '--emisor' :
             emisor = val
@@ -131,4 +143,6 @@ def parseArgs(args) :
             papel = val
         elif var == '--email' :
             email = 1
-    return emisor, formato, encoding, dir_entrada, dir_salida, normalizar, papel, email
+        elif var == '--imprimir' :
+            imprimir = 1
+    return emisor, formato, encoding, dir_entrada, dir_salida, normalizar, papel, email, imprimir

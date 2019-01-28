@@ -298,6 +298,12 @@ Si el receptor tiene correo asociado se puede enviar automáticamente el DTE por
 
     $ libredte-cliente.py monitor --emisor=76192083-9 --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida --email
 
+Es posible enviar a imprimir directamente el PDF a la impresora por defecto del equipo de la siguiente manera:
+
+.. code:: shell
+
+    $ libredte-cliente.py monitor --emisor=76192083-9 --dir_entrada=/home/delaf/entrada --dir_salida=/home/delaf/salida --imprimir
+
 Es posible especificar la codificación de los archivos que se leerán en el directorio que
 se estará monitoreando. Con esto, cada archivo será transformado automáticamente a UTF-8
 por el cliente antes de enviar al servicio web de LibreDTE:
