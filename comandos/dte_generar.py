@@ -30,6 +30,7 @@ from base64 import b64encode, b64decode
 import os
 from json import dumps as json_encode
 from json import loads as json_decode
+from json.decoder import JSONDecodeError
 import codecs
 import sys
 
@@ -44,10 +45,18 @@ def main(Cliente, args, config) :
         data = loadJSON(json, encoding)
         formato = 'json'
     if xml :
-        data = loadXML(xml, encoding)
+        try:
+            data = loadXML(xml, encoding)
+        except FileNotFoundError as e:
+            print(e)
+            return 1
         formato = 'xml'
     if archivo != None and formato != None and formato not in ('json', 'xml') :
-        data = '"'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'"'
+        try:
+            data = '"'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'"'
+        except FileNotFoundError as e:
+            print(e)
+            return 1
     if data == None :
         print('Debe especificar un archivo JSON o bien un archivo XML a enviar')
         return 1
@@ -63,7 +72,13 @@ def main(Cliente, args, config) :
         emitir_url += '&email='+str(email)
     emitir = Cliente.post(emitir_url, data)
     if emitir.status_code!=200 :
-        print('Error al emitir DTE temporal: '+json_encode(emitir.json()))
+        try:
+            print('Error al emitir DTE temporal: '+json_encode(emitir.json()))
+        except JSONDecodeError as e:
+            if emitir.status_code == 507:
+                print('Error al emitir DTE temporal: con código #' + str(emitir.status_code) + ' de guardado de datos')
+            else:
+                print('Error desconocido en el JSON de respuesta con código #' + str(emitir.status_code) + ' al emitir DTE temporal: ' + str(e))
         return emitir.status_code
     try :
         with open(dir+'/temporal.json', 'w') as f:
