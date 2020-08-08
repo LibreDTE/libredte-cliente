@@ -161,6 +161,18 @@ automáticamente a UTF-8 por el cliente antes de enviar al servicio web de Libre
 
     $ libredte-cliente.py dte_generar --json=dte.json --dir=resultado --encoding=ISO-8859-1
 
+Se puede cambiar el formato por defecto del PDF que se genera:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_generar --json=dte.json --dir=resultado --formato_pdf=general
+
+Se pueden pasar datos extras al formato del PDF que se genera cuando el formato de datos no es JSON:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_generar --json=dte.json --dir=resultado --formato_pdf=general --extra=datos_extra.json
+
 dte_estado
 ~~~~~~~~~~
 
@@ -196,6 +208,12 @@ Descargar PDF en papel contínuo y guardar en una ruta específica con un nombre
 .. code:: shell
 
     $ libredte-cliente.py dte_emitido_pdf --rut=76192083 --dte=33 --folio=1 --pdf=/home/delaf/factura.pdf --papel=80
+
+Se puede cambiar el formato por defecto del PDF que se genera:
+
+.. code:: shell
+
+    $ libredte-cliente.py dte_emitido_pdf --rut=76192083 --dte=33 --folio=1 --formato_pdf=general
 
 dte_crear_pdf
 ~~~~~~~~~~~~~

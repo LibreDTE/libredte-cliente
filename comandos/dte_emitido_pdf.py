@@ -26,11 +26,11 @@ Comando para obtener el PDF de un DTE previamente emitido
 """
 
 # opciones en formato largo
-long_options = ['dte=', 'folio=', 'rut=', 'cedible=', 'papel=', 'compress=', 'copias_tributarias=', 'copias_cedibles=', 'pdf=']
+long_options = ['dte=', 'folio=', 'rut=', 'cedible=', 'formato_pdf=', 'papel=', 'compress=', 'copias_tributarias=', 'copias_cedibles=', 'pdf=']
 
 # función principal del comando
 def main (Cliente, args, config) :
-    dte, folio, rut, cedible, papel, compress, copias_tributarias, copias_cedibles, pdf = parseArgs(args)
+    dte, folio, rut, cedible, formato_pdf, papel, compress, copias_tributarias, copias_cedibles, pdf = parseArgs(args)
     if not pdf :
         pdf = 'dte_'+str(rut)+'_T'+str(dte)+'F'+str(folio)+'.pdf'
     recurso = '/dte/dte_emitidos/pdf/'+str(dte)+'/'+str(folio)+'/'+str(rut)+'?compress'+str(compress)
@@ -58,6 +58,7 @@ def parseArgs(args) :
     folio = 0
     rut = 0
     cedible = None
+    formato_pdf = 'estandar'
     papel = None
     compress = 0
     copias_tributarias = None
@@ -72,6 +73,8 @@ def parseArgs(args) :
             rut = val
         elif var == '--cedible' :
             cedible = val
+        elif var == '--formato_pdf' :
+            formato_pdf = val
         elif var == '--papel' :
             papel = val
         elif var == '--compress' :
@@ -82,4 +85,4 @@ def parseArgs(args) :
             copias_cedibles = val
         elif var == '--pdf' :
             pdf = val
-    return dte, folio, rut, cedible, papel, compress, copias_tributarias, copias_cedibles, pdf
+    return dte, folio, rut, cedible, formato_pdf, papel, compress, copias_tributarias, copias_cedibles, pdf
