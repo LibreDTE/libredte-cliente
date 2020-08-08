@@ -22,7 +22,7 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 """
 Comando para generar un DTE a partir de los datos de JSON o un XML
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-12-29
+@version 2020-08-07
 """
 
 # módulos usados
@@ -35,11 +35,11 @@ import codecs
 import sys
 
 # opciones en formato largo
-long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'encoding=', 'cedible=', 'papel=', 'web=', 'dir=', 'normalizar=', 'getXML', 'email', 'cotizacion']
+long_options = ['json=', 'xml=', 'archivo=', 'formato=', 'encoding=', 'cedible=', 'formato_pdf=', 'papel=', 'web=', 'dir=', 'normalizar=', 'extra=', 'getXML', 'email', 'cotizacion']
 
 # función principal del comando
 def main(Cliente, args, config) :
-    json, xml, archivo, formato, encoding, cedible, papel, web, dir, normalizar, getXML, email, cotizacion = parseArgs(args)
+    json, xml, archivo, formato, encoding, cedible, formato_pdf, papel, web, dir, normalizar, extra, getXML, email, cotizacion = parseArgs(args)
     data = None
     if json :
         data = loadJSON(json, encoding)
@@ -53,7 +53,10 @@ def main(Cliente, args, config) :
         formato = 'xml'
     if archivo != None and formato != None and formato not in ('json', 'xml') :
         try:
-            data = '"'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'"'
+            if extra != None :
+                data = '{"datos": "'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'", "extra": "'+b64encode(bytes(loadFile(extra, encoding), 'UTF8')).decode('UTF8')+'"}'
+            else :
+                data = '"'+b64encode(bytes(loadFile(archivo, encoding), 'UTF8')).decode('UTF8')+'"'
         except FileNotFoundError as e:
             print(e)
             return 1
@@ -115,7 +118,7 @@ def main(Cliente, args, config) :
             f.write(';'.join(columnas)+"\n")
             f.write(';'.join(valores)+"\n")
         # obtener el PDF del DTE
-        generar_pdf = Cliente.get('/dte/dte_emitidos/pdf/'+str(generar.json()['dte'])+'/'+str(generar.json()['folio'])+'/'+str(generar.json()['emisor'])+'?cedible='+str(cedible)+'&papelContinuo='+str(papel))
+        generar_pdf = Cliente.get('/dte/dte_emitidos/pdf/'+str(generar.json()['dte'])+'/'+str(generar.json()['folio'])+'/'+str(generar.json()['emisor'])+'?cedible='+str(cedible)+'&formato='+str(formato_pdf)+'&papelContinuo='+str(papel))
         if generar_pdf.status_code!=200 :
             print('Error al generar PDF del DTE: '+json_encode(generar_pdf.json()))
             return generar_pdf.status_code
@@ -124,7 +127,7 @@ def main(Cliente, args, config) :
             f.write(generar_pdf.content)
     # si es cotización bajar el PDF
     else :
-        cotizacion_pdf = Cliente.get('/dte/dte_tmps/pdf/'+str(emitir.json()['receptor'])+'/'+str(emitir.json()['dte'])+'/'+str(emitir.json()['codigo'])+'/'+str(emitir.json()['emisor'])+'&cotizacion=1&papelContinuo='+str(papel))
+        cotizacion_pdf = Cliente.get('/dte/dte_tmps/pdf/'+str(emitir.json()['receptor'])+'/'+str(emitir.json()['dte'])+'/'+str(emitir.json()['codigo'])+'/'+str(emitir.json()['emisor'])+'&cotizacion=1&formato='+str(formato_pdf)+'&papelContinuo='+str(papel))
         if cotizacion_pdf.status_code!=200 :
             print('Error al generar PDF de la cotización: '+json_encode(cotizacion_pdf.json()))
             return cotizacion_pdf.status_code
@@ -141,10 +144,12 @@ def parseArgs(args) :
     formato = None
     encoding = 'UTF-8'
     cedible = 1
+    formato_pdf = 'estandar'
     papel = 0
     web = False
     dir = ''
     normalizar = 1
+    extra = None
     getXML = 0
     email = 0
     cotizacion = 0
@@ -161,6 +166,8 @@ def parseArgs(args) :
             encoding = val
         elif var == '--cedible' :
             cedible = val
+        elif var == '--formato_pdf' :
+            formato_pdf = val
         elif var == '--papel' :
             papel = val
         elif var == '--web' :
@@ -169,13 +176,15 @@ def parseArgs(args) :
             dir = val
         elif var == '--normalizar' :
             normalizar = val
+        elif var == '--extra' :
+            extra = val
         elif var == '--getXML' :
             getXML = 1
         elif var == '--email' :
             email = 1
         elif var == '--cotizacion' :
             cotizacion = 1
-    return json, xml, archivo, formato, encoding, cedible, papel, web, dir, normalizar, getXML, email, cotizacion
+    return json, xml, archivo, formato, encoding, cedible, formato_pdf, papel, web, dir, normalizar, extra, getXML, email, cotizacion
 
 # función que carga un JSON
 def loadJSON (archivo, encoding) :
