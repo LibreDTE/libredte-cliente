@@ -359,5 +359,5 @@ Imprimir en una impresora específica que el computador tenga configurada (sólo
     $ libredte-cliente.py websocketd --printer_type=system --printer_uri=Brother_HL-2070N_series
 
 Para la impresión en una impresora del computador se usa el comando
-[imprimir](https://github.com/LibreDTE/libredte-cliente#imprimir) y se deben
+`imprimir <https://github.com/LibreDTE/libredte-cliente#imprimir>`_ y se deben
 tener los mismos requerimientos.
