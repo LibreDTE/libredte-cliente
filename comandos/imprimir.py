@@ -23,24 +23,46 @@ En caso contrario, consulte <http://www.gnu.org/licenses/agpl.html>.
 Comando para imprimir en la impresora por defecto y en una impresora en específico
 @author Fernando Lizana Nuñez (f.lizananuez[at]uandresbello.edu)
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2017-02-17
+@version 2020-08-23
 """
 
 # módulos usados por el comando
 import os
 if os.name == 'posix':
-    import cups
+    try:
+        import cups
+    except ModuleNotFoundError:
+        pass
 elif os.name == 'nt' :
-    import win32print
-    import win32api
-    from time import sleep
+    try:
+        import win32print
+        import win32api
+    except ModuleNotFoundError:
+        pass
+from time import sleep
 
 # opciones en formato largo
 long_options = ['pdf=', 'impresora=']
 
 # función principal del comando
 def main (Cliente, args, config) :
-    pdf,impresora = parseArgs(args)
+    # importar módulo según corresponda
+    if os.name == 'posix':
+        try:
+            import cups
+        except ModuleNotFoundError:
+            print('Falta instalar módulo de CUPS para Python (pycups)')
+            return 3
+    elif os.name == 'nt' :
+        try:
+            import win32print
+            import win32api
+            from time import sleep
+        except ModuleNotFoundError:
+            print('Falta instalar pywin32')
+            return 3
+    # procesar comando
+    pdf, impresora = parseArgs(args)
     if impresora is None :
         impresora = getDefaultPrinter()
     if impresora is None :
@@ -67,7 +89,7 @@ def parseArgs(args) :
 # entrega la impresora por defecto del sistema
 def getDefaultPrinter() :
     if os.name == 'nt' :
-        defaultPrinter = win32print.GetDefaultPrinter()#Función que entrega un string con el nombre de la impresora
+        defaultPrinter = win32print.GetDefaultPrinter() # función que entrega un string con el nombre de la impresora
     else :
         conn = cups.Connection()
         defaultPrinter = conn.getDefault()
@@ -85,10 +107,10 @@ def printLinux(pdf, impresora) :
     return 0
 
 # imprimir en windows
-def printWindows(pdf, impresora) :
+def printWindows(pdf, impresora, delay = 5) :
     ImpresoraPorDefecto = str(win32print.GetDefaultPrinter()) # primero guardamos la impresora por defecto
     win32print.SetDefaultPrinter(impresora) # luego se cambia la impresora por defecto por la impresora específica
-    win32api.ShellExecute(0, "print", pdf, None, ".", 0)
-    sleep(5) # se espera un tiempo para que se envíe el archivo a la impresora
+    win32api.ShellExecute(0, 'print', pdf, None, '.', 0)
+    sleep(delay) # se espera un tiempo para que se envíe el archivo a la impresora
     win32print.SetDefaultPrinter(ImpresoraPorDefecto) # vuelve a estar la impresora por defecto original
     return 0

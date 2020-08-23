@@ -29,7 +29,7 @@ sistema. Para la impresión está soportado el caso de imprimir con ESCPOS o el
 PDF del DTE.
 
 @author Esteban De La Fuente Rubio, DeLaF (esteban[at]sasco.cl)
-@version 2018-11-04
+@version 2020-08-23
 """
 
 # módulos usados
@@ -50,7 +50,7 @@ long_options = ['printer_type=', 'printer_uri=']
 # función principal del comando
 def main(Cliente, args, config) :
     printer_type, printer_uri = parseArgs(args)
-    log("Iniciando LibreDTE websocketd")
+    log('Iniciando LibreDTE websocketd')
     try :
         server = websockets.serve(
             functools.partial(
@@ -141,32 +141,34 @@ def on_message(websocket, path, printer_type, printer_uri):
             elif printer_type == 'system' :
                 # directorio principal y temporal
                 cmd_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-                if not os.path.exists(cmd_dir+"/tmp") :
-                    os.makedirs(cmd_dir+"/tmp")
+                if not os.path.exists(cmd_dir+'/tmp') :
+                    os.makedirs(cmd_dir+'/tmp')
                 # crear archivo temporal con el PDF
                 dt = datetime.now()
                 ms = (dt.day * 24 * 60 * 60 + dt.second) * 1000 + dt.microsecond / 1000.0
-                pdf_file = cmd_dir+"/tmp/dte_"+str(ms)+".pdf"
+                pdf_file = cmd_dir+'/tmp/dte_'+str(ms)+'.pdf'
                 with open(pdf_file, 'wb') as f:
                     f.write(datos)
                 # armar comando a ejecutar
                 if os.name == 'posix':
-                    cmd = "python3"
+                    cmd = 'python3'
                 elif os.name == 'nt' :
-                    cmd = "python.exe"
-                cmd += " "+cmd_dir+"/libredte-cliente.py imprimir"
-                cmd += " --pdf="+pdf_file
+                    cmd = 'python.exe'
+                cmd += ' '+cmd_dir+'/libredte-cliente.py imprimir'
+                cmd += ' --pdf='+pdf_file
+                if printer_uri != '127.0.0.1:9100':
+                    cmd += ' --impresora='+printer_uri
                 # ejecutar comando que imprime usando el cliente de LibreDTE
                 try :
-                    subprocess.check_output(cmd.split(" "))
+                    subprocess.check_output(cmd.split(' '))
+                    os.remove(pdf_file)
                 except subprocess.CalledProcessError as e :
+                    os.remove(pdf_file)
                     yield from websocket.send(json.dumps({
-                        'status': 1,
-                        'message': 'No fue posible imprimir en la impresora local (' + str(e) + ')'
+                        'status': e.returncode,
+                        'message': 'No fue posible imprimir en la impresora local: ' + e.output.decode('utf-8')
                     }))
-                    return 1
-                # quitar archivo temporal del PDF
-                os.remove(pdf_file)
+                    return e.returncode
             else :
                 yield from websocket.send(json.dumps({
                     'status': 1,
@@ -180,7 +182,7 @@ def on_message(websocket, path, printer_type, printer_uri):
             }))
             return 1
         # log impresión
-        log("Se imprimió usando '" + formato + "' en la impresora '" + printer_type + "'")
+        log('Se imprimió usando \'' + formato + '\' en la impresora \'' + printer_type + '\'')
     # todo ok
     return 0
 
@@ -188,7 +190,7 @@ def on_message(websocket, path, printer_type, printer_uri):
 def print_network(uri, data) :
     if uri.find(':') > 0 :
         host, port = uri.split(':')
-    else :        
+    else :
         host = uri
         port = 9100
     printer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -200,4 +202,4 @@ def print_network(uri, data) :
 # función para log en el servidor de websockets
 def log(msg) :
     dt = datetime.now()
-    print(str(dt).split(".")[0] + ": " + msg)
+    print(str(dt).split('.')[0] + ': ' + msg)

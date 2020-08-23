@@ -340,14 +340,24 @@ Permite crear un servidor de websockets para que la aplicación web de LibreDTE
 se comunique con el computador local. Esto permite, por ejemplo, imprimir
 directamente desde la aplicación web un DTE sin tener que bajar o abrir un PDF.
 
+Imprimir en una impresora en red (PDF o usando ESCPOS para impresoras térmicas):
+
+.. code:: shell
+
+    $ libredte-cliente.py websocketd --printer_type=network --printer_uri=172.16.1.5
+
 Imprimir en la impresora que el computador tenga configurada por defecto (sólo PDF):
 
 .. code:: shell
 
     $ libredte-cliente.py websocketd --printer_type=system
 
-Imprimir en una impresora en red (PDF o usando ESCPOS para impresoras térmicas):
+Imprimir en una impresora específica que el computador tenga configurada (sólo PDF):
 
 .. code:: shell
 
-    $ libredte-cliente.py websocketd --printer_uri=172.16.1.219
+    $ libredte-cliente.py websocketd --printer_type=system --printer_uri=Brother_HL-2070N_series
+
+Para la impresión en una impresora del computador se usa el comando
+[imprimir](https://github.com/LibreDTE/libredte-cliente#imprimir) y se deben
+tener los mismos requerimientos.
