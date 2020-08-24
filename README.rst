@@ -19,43 +19,22 @@ utilizado tanto desde software libre como software privativo.
 Si se desea modificar o distribuir este cliente, se debe hacer bajo los términos
 de la licencia AGPL.
 
-Requerimientos
---------------
+Instalación
+-----------
+
+### Instalar Python
 
 Para poder ejecutar el cliente es necesario tener instalado Python 3
-(versión 3.4 o superior) y el SDK de LibreDTE para Python:
+(versión 3.4 o superior).
 
 La instalación de Python 3 depende del sistema operativo, y en el caso de
 GNU/Linux es probable que ya venga incluído.
 
 Si utiliza Microsoft Windows deberá
 `descargar e instalar Python 3 <https://www.python.org/downloads/windows>`_,
-marcar la opción "Add Python to PATH". Además revisa la instalación de LXML
-según se describe `aquí <https://github.com/LibreDTE/libredte-sdk-python#lxml-en-microsoft-windows>`_.
+marcar la opción "Add Python to PATH".
 
-Una vez instalado Python 3 deberá instalar, usando PIP, el SDK de LibreDTE. En
-GNU/Linux:
-
-.. code:: shell
-
-    $ sudo pip3 install libredte
-
-En Microsoft Windows:
-
-.. code:: shell
-
-    > pip.exe install libredte
-
-Si desea usar el servidor de WebSockets deberá instalar:
-
-.. code:: shell
-
-    $ sudo pip3 install websockets
-
-(o el equivalente en Microsoft Windows)
-
-Instalación
------------
+### Descargar cliente de LibreDTE
 
 Para instalar el cliente, se puede clonar directamente el proyecto:
 
@@ -70,6 +49,20 @@ con el cliente comprimido.
 Se recomienda agregar al PATH del sistema operativo la ruta absoluta hacia
 libredte-cliente ya que en esta carpeta se encuentra el programa
 "libredte-cliente.py" que es el comando principal que se debe ejecutar.
+
+### Instalación de requerimientos adicionales
+
+En GNU/Linux:
+
+.. code:: shell
+
+    $ sudo pip3 install -r requirements.txt
+
+En Microsoft Windows:
+
+.. code:: shell
+
+    > pip.exe install -r requirements.txt
 
 ¿Cómo ejecuto el cliente?
 -------------------------

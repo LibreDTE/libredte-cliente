@@ -1,0 +1,8 @@
+lxml
+fpdf
+pdf417gen
+datetime
+pyyaml
+pyopenssl
+websockets
+libredte
