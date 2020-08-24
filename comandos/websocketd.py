@@ -70,7 +70,7 @@ def main(Cliente, args, config) :
 
 # función que procesa los argumentos del comando
 def parseArgs(args) :
-    printer_type = 'network'
+    printer_type = 'system'
     printer_uri = '127.0.0.1:9100'
     for var, val in args:
         if var == '--printer_type' :
