@@ -22,7 +22,8 @@ de la licencia AGPL.
 Instalación
 -----------
 
-### Instalar Python
+Instalar Python
+~~~~~~~~~~~~~~~
 
 Para poder ejecutar el cliente es necesario tener instalado Python 3
 (versión 3.4 o superior).
@@ -34,7 +35,8 @@ Si utiliza Microsoft Windows deberá
 `descargar e instalar Python 3 <https://www.python.org/downloads/windows>`_,
 marcar la opción "Add Python to PATH".
 
-### Descargar cliente de LibreDTE
+Descargar cliente de LibreDTE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Para instalar el cliente, se puede clonar directamente el proyecto:
 
@@ -50,7 +52,8 @@ Se recomienda agregar al PATH del sistema operativo la ruta absoluta hacia
 libredte-cliente ya que en esta carpeta se encuentra el programa
 "libredte-cliente.py" que es el comando principal que se debe ejecutar.
 
-### Instalación de requerimientos adicionales
+Instalación de requerimientos adicionales
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 En GNU/Linux:
 
