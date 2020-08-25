@@ -37,6 +37,7 @@ elif os.name == 'nt' :
     try:
         import win32print
         import win32api
+        import pywintypes
     except ModuleNotFoundError:
         pass
 from time import sleep
@@ -56,8 +57,6 @@ def main (Cliente, args, config) :
     elif os.name == 'nt' :
         try:
             import win32print
-            import win32api
-            from time import sleep
         except ModuleNotFoundError:
             print('Falta instalar pywin32')
             return 3
@@ -71,7 +70,10 @@ def main (Cliente, args, config) :
     if os.name == 'posix':
         return printLinux(pdf, impresora)
     elif os.name == 'nt' :
-        return printWindows(pdf, impresora);
+        if printWindows(pdf, impresora) == 0 :
+            return 0
+        else:
+            return 4
     print('Sistema', os.name, 'no soportado')
     return 1
 
@@ -110,7 +112,11 @@ def printLinux(pdf, impresora) :
 def printWindows(pdf, impresora, delay = 5) :
     ImpresoraPorDefecto = str(win32print.GetDefaultPrinter()) # primero guardamos la impresora por defecto
     win32print.SetDefaultPrinter(impresora) # luego se cambia la impresora por defecto por la impresora específica
-    win32api.ShellExecute(0, 'print', pdf, None, '.', 0)
+    try:
+        win32api.ShellExecute(0, 'print', pdf, None, '.', 0)
+    except pywintypes.error as e:
+        print(e.strerror)
+        return 1
     sleep(delay) # se espera un tiempo para que se envíe el archivo a la impresora
     win32print.SetDefaultPrinter(ImpresoraPorDefecto) # vuelve a estar la impresora por defecto original
     return 0
