@@ -190,6 +190,7 @@ def on_message(websocket, path, printer_type, printer_uri):
 def print_network(uri, data) :
     if uri.find(':') > 0 :
         host, port = uri.split(':')
+        port = int(port)
     else :
         host = uri
         port = 9100
