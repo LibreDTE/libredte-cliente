@@ -53,7 +53,7 @@ libredte-cliente ya que en esta carpeta se encuentra el programa
 "libredte-cliente.py" que es el comando principal que se debe ejecutar.
 
 Si usas Microsoft Windows puedes
-`descargar el instalador del cliente <http://archivos.libredte.cl/software/libredte-cliente.exe>`_
+`descargar el instalador del cliente <https://cdn.sasco.cl/proyectos/libredte/software/libredte-cliente.exe>`_
 que viene con el cliente de LibreDTE, Python 3.8 y todas las dependencias necesarias.
 
 Instalación de requerimientos adicionales
