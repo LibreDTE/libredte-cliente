@@ -6,3 +6,4 @@ pyyaml
 pyopenssl
 websockets
 libredte
+pypiwin32; platform_system=="Windows"
