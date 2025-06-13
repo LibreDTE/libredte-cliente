@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
 """
 LibreDTE
 Copyright (C) SASCO SpA (https://sasco.cl)
@@ -26,33 +23,44 @@ Cliente LibreDTE para integración con servicios web desde línea de comandos
 @version 2017-04-10
 """
 
-# módulos que se usarán
 import sys
 import getopt
 import os
 import yaml
-from libredte.sdk import LibreDTE
 
-# agregar al path el directorio actual para poder incluir módulos (como lib)
+from libredte import api_client
+
+# Agregar al path el directorio actual para poder incluir módulos (como lib).
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# función con modo de uso
-def usage(error = False, exit = 0) :
+def usage(error = None, exit_code = 0) :
+    """
+    Muestra el modo de uso de la librería.
+
+    :param error: El error a mostrar.
+    :type error: str o bool
+    :param exit_code: El código de salida.
+    :type exit_code: int
+    """
     print()
-    print('LibreDTE ¡facturación electrónica libre para Chile!                  libredte.cl')
+    print(
+        'LibreDTE ¡facturación electrónica libre para Chile!                  '
+        'libredte.cl'
+    )
     print()
-    if error :
-        print('[Error] '+error)
+    if error is not None:
+        print('[Error] '+ str(error))
         print()
     print('Modo de uso:')
     print('  $ '+os.path.basename(sys.argv[0])+' <COMANDO> <OPCIONES>')
     print()
-    if exit :
-        sys.exit(exit)
+    if exit_code :
+        sys.exit(exit_code)
 
-# cargar comando (módulo) que se desea usar
+# Cargar comando (módulo) que se desea usar.
 if len(sys.argv) == 1 :
     usage('Falta indicar el comando que se desea ejecutar', 2)
+
 cmd = sys.argv[1]
 dirname = os.path.dirname(__file__)
 if not dirname :
@@ -64,16 +72,20 @@ try :
 except AttributeError :
     usage('No se encontró la función "main" en el módulo "'+cmd+'"', 4)
 try :
-    options = getattr(__import__("comandos."+cmd, fromlist=["options"]), "options")
+    options = getattr(
+        __import__("comandos."+cmd, fromlist=["options"]), "options"
+    )
 except AttributeError :
     options = ''
 try :
-    long_options = getattr(__import__("comandos."+cmd, fromlist=["long_options"]), "long_options")
+    long_options = getattr(
+        __import__("comandos."+cmd, fromlist=["long_options"]), "long_options"
+    )
 except AttributeError :
     long_options = []
 
-# configuración predeterminada (no modificar acá, usar archivo config.yml)
-hash = '' # --hash=HASH_USUARIO
+# Configuración predeterminada (no modificar acá, usar archivo config.yml).
+hash_value = '' # --hash=HASH_USUARIO
 url = 'https://libredte.cl' # --url=NUEVA_URL
 if os.path.isfile(dirname+"/config.yml") :
     config = yaml.safe_load(open(dirname+"/config.yml"))
@@ -81,36 +93,36 @@ if os.path.isfile(dirname+"/config.yml") :
         config = {}
     if 'auth' in config and config['auth'] :
         if 'hash' in config['auth'] :
-            hash = config['auth']['hash']
+            hash_value = config['auth']['hash']
         if 'url' in config['auth'] :
             url = config['auth']['url']
 else :
     config = {}
 
-# definir opciones por defecto
+# Definir opciones por defecto.
 if len(options) :
     options += ':'
 options += 'h'
 long_options += ['help', 'url=', 'hash=']
 
-# obtener parámetros del comando
+# Obtener parámetros del comando.
 try:
     opts, args = getopt.getopt(sys.argv[2:], options, long_options)
 except getopt.GetoptError:
     usage('Ocurrió un error al obtener los parámetros del comando', 5)
 
-# asignar url y hash si se indicaron
+# Asignar url y hash si se indicaron.
 for var, val in opts:
     if var == '--hash' :
-        hash = val
+        hash_value = val
     elif var == '--url' :
         url = val
     elif var in ('-h', '--help') :
-        usage();
+        usage()
         sys.exit(0)
 
-# crear cliente
-Cliente = LibreDTE(hash, url)
+# Crear cliente.
+Cliente = api_client.ApiClient(hash_value, url)
 
-# lanzar comando con sus opciones
+# Lanzar comando con sus opciones.
 sys.exit(main(Cliente, opts, config))
